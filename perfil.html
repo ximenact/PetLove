@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Edita tu perfil PET LOVE">
+  <title>Mi perfil | PET LOVE</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
+      <nav class="links">
+        <a href="inicio.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="servicios.html">Servicios</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <a class="cart-link" href="carrito.html">🛒 Carrito <span data-count>0</span></a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container profile-wrap">
+      
+      <div class="profile-banner">
+        <span class="profile-paw">🐾</span>
+        <p class="eyebrow">TU ESPACIO PET LOVE</p>
+        <h1 id="profile-greeting">¡Hola, amante de las mascotas!</h1>
+        <p>Tu perfil, tus datos y tus compras en un solo lugar.</p>
+        <div class="profile-shortcuts">
+          <a href="mis-pedidos.html">📦 Mis pedidos</a>
+          <a href="carrito.html">🛍️ Mi carrito</a>
+        </div>
+      </div>
+
+      <div class="profile-content">
+        <aside class="profile-side">
+          <div class="avatar" id="profile-avatar">🐶</div>
+          <h2 id="profile-name-card">Mi perfil</h2>
+          <p id="profile-email-card" class="muted">Inicia sesión para ver tus datos</p>
+          <span class="profile-chip">💜 Familia PET LOVE</span>
+        </aside>
+
+        <form class="form profile-form" id="profile-form" data-profile-form>
+          <div class="profile-form-title">
+            <span class="icon-bubble">✏️</span>
+            <div>
+              <h2>Editar mi perfil</h2>
+              <p>Actualiza la información de tu cuenta.</p>
+            </div>
+          </div>
+
+          <div class="group">
+            <label for="profile-name">Nombre completo</label>
+            <input id="profile-name" required minlength="2" placeholder="¿Cómo te llamas?">
+          </div>
+
+          <div class="group">
+            <label for="profile-email">Correo electrónico</label>
+            <input id="profile-email" type="email" required placeholder="tu@email.com">
+          </div>
+
+          <div class="group">
+            <label for="profile-pet">Nombre de tu mascota (opcional)</label>
+            <input id="profile-pet" placeholder="¿Cómo se llama tu compañero?">
+          </div>
+
+          <div class="formmsg hidden" data-profile-msg></div>
+
+          <div class="profile-actions">
+            <button class="btn" type="submit">Guardar cambios ✓</button>
+            <button class="btn outline" type="button" id="logout-btn">Cerrar sesión ↗</button>
+          </div>
+
+          <p class="profile-note">🔒 Esta versión guarda los datos en este navegador para fines de demostración.</p>
+        </form>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="petlove-footer">
+    <div class="container foot">
+      <div class="footer-brand">
+        <a class="footer-logo" href="inicio.html">🐾 PET <span>LOVE</span></a>
+        <p>Pequeños detalles, grandes momentos y mucho amor para quienes hacen nuestra vida más feliz.</p>
+        <div class="footer-message">Hecho con <span aria-label="amor">♥</span> para tus mejores amigos</div>
+      </div>
+
+      <div class="footer-column">
+        <h3>Explora</h3>
+        <nav class="foot-links" aria-label="Enlaces de navegación">
+          <a href="inicio.html">Inicio</a>
+          <a href="catalogo.html">Catálogo</a>
+          <a href="servicios.html">Servicios</a>
+        </nav>
+      </div>
+
+      <div class="footer-column">
+        <h3>Tu cuenta</h3>
+        <nav class="foot-links" aria-label="Enlaces de tu cuenta">
+          <a href="mis-pedidos.html">Mis pedidos</a>
+          <a href="perfil.html">Mi perfil</a>
+          <a href="contacto.html">Contacto</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>Todos los derechos reservados.</p>
+      <p>© 2026 PET LOVE.</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>

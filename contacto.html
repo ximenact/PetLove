@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Contacta con PET LOVE">
+  <title>Contacto | PET LOVE</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
+      <nav class="links">
+        <a href="inicio.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="servicios.html">Servicios</a>
+        <a class="active" href="contacto.html">Contacto</a>
+        <a href="perfil.html">Mi perfil</a>
+      </nav>
+      <a class="cart-link" href="carrito.html">🛒 Carrito <span data-count>0</span></a>
+    </div>
+  </header>
+
+  <main class="contact-page">
+    <section class="contact-hero">
+      <div class="container contact-hero-inner">
+        <div>
+          <span class="contact-kicker">💌 ESTAMOS PARA TI</span>
+          <h1>¡Hablemos de lo que<br><span>más quieres!</span></h1>
+          <p>¿Tienes dudas sobre un producto, un pedido o nuestros servicios? Nos encanta ayudarte a cuidar a tu mejor amigo.</p>
+          <div class="contact-trust">
+            <span>🐾 Atención cercana</span>
+            <span>💜 Amor por los animales</span>
+          </div>
+        </div>
+        <div class="contact-illustration" aria-hidden="true">
+          <div class="contact-sun"></div>
+          <div class="contact-pet">🐶</div>
+          <span class="float-heart heart-one">♥</span>
+          <span class="float-heart heart-two">✦</span>
+          <span class="float-heart heart-three">♥</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container contact-main">
+      <div class="contact-info-column">
+        <div class="head contact-heading">
+          <span class="eyebrow">CONECTEMOS</span>
+          <h2>Estamos a un mensajito 💜</h2>
+          <p class="muted">Elige cómo prefieres comunicarte con nosotros.</p>
+        </div>
+
+        <article class="contact-info-card email-card">
+          <span class="contact-icon">✉</span>
+          <div>
+            <h3>Escríbenos</h3>
+            <p>hola@petlove.example</p>
+            <small>Para dudas y recomendaciones</small>
+          </div>
+          <span class="contact-card-arrow">↗</span>
+        </article>
+
+        <article class="contact-info-card phone-card">
+          <span class="contact-icon">☎</span>
+          <div>
+            <h3>Llámanos</h3>
+            <p>+57 300 000 0000</p>
+            <small>Atención de lunes a sábado</small>
+          </div>
+          <span class="contact-card-arrow">↗</span>
+        </article>
+
+        <div class="contact-tip">
+          <span>🐱</span>
+          <p>
+            <strong>¿Necesitas una recomendación?</strong><br>
+            Cuéntanos la edad y las necesidades de tu mascota para orientarte mejor.
+          </p>
+        </div>
+
+        
+        <div class="contact-map-card">
+          <div class="contact-map-heading">
+            <span class="contact-map-icon">📍</span>
+            <div>
+              <h3>Donde nos ubicamos</h3>
+              <p>¡Visitanos! Te esperamos con mucho amor 🐾</p>
+            </div>
+          </div>
+
+          <div class="contact-map">
+            <iframe
+              src="https://maps.google.com/maps?q=Cra.%2070%20%2345-20%2C%20Medell%C3%ADn%2C%20Colombia&output=embed"
+              width="100%"
+              height="250"
+              style="border:0;"
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Ubicación de ejemplo de PET LOVE en Medellín">
+            </iframe>
+          </div>
+
+          <div class="contact-map-address">
+            <span>📌</span>
+            <div>
+              <strong>PET LOVE</strong>
+              <p>Cra. 70 # 45-20, Medellín, Colombia</p>
+            </div>
+          </div>
+
+          <a
+            class="contact-map-link"
+            href="https://www.google.com/maps/search/?api=1&query=Cra.%2070%20%2345-20%2C%20Medell%C3%ADn%2C%20Colombia"
+            target="_blank"
+            rel="noopener noreferrer">
+            Cómo llegar <span>↗</span>
+          </a>
+        </div>
+      </div>
+
+      <form class="form contact-form" data-demo-form data-message="Mensaje validado, pero no se envió: conecta un servidor o servicio de formularios para recibir mensajes.">
+        <div class="form-title-icon">💌</div>
+        <span class="eyebrow">TE LEEMOS CON CARIÑO</span>
+        <h2>Envíanos un mensaje</h2>
+        <p>Completa estos datos y cuéntanos qué necesitas.</p>
+
+        <div class="group">
+          <label for="cname">Tu nombre</label>
+          <input id="cname" required placeholder="Escribe tu nombre">
+        </div>
+
+        <div class="group">
+          <label for="cemail">Correo electrónico</label>
+          <input id="cemail" type="email" required placeholder="tu@email.com">
+        </div>
+
+        <div class="group">
+          <label for="subject">¿Sobre qué nos escribes?</label>
+          <select id="subject" required>
+            <option value="">Selecciona un tema</option>
+            <option>Productos</option>
+            <option>Servicios</option>
+            <option>Pedidos</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div class="group">
+          <label for="message">Tu mensaje</label>
+          <textarea id="message" rows="5" required placeholder="¡Cuéntanos! Estamos aquí para ayudarte..."></textarea>
+        </div>
+
+        <button class="btn full contact-submit">Enviar mensaje <span>➜</span></button>
+
+        <div class="formmsg hidden" data-message></div>
+
+        <p class="form-privacy">♡ Usaremos tus datos solo para responder a tu consulta.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="petlove-footer">
+    <div class="container foot">
+      <div class="footer-brand">
+        <a class="footer-logo" href="inicio.html">🐾 PET <span>LOVE</span></a>
+        <p>Pequeños detalles, grandes momentos y mucho amor para quienes hacen nuestra vida más feliz.</p>
+        <div class="footer-message">Hecho con <span aria-label="amor">♥</span> para tus mejores amigos</div>
+      </div>
+
+      <div class="footer-column">
+        <h3>Explora</h3>
+        <nav class="foot-links" aria-label="Enlaces de navegación">
+          <a href="inicio.html">Inicio</a>
+          <a href="catalogo.html">Catálogo</a>
+          <a href="servicios.html">Servicios</a>
+        </nav>
+      </div>
+
+      <div class="footer-column">
+        <h3>Tu cuenta</h3>
+        <nav class="foot-links" aria-label="Enlaces de tu cuenta">
+          <a href="mis-pedidos.html">Mis pedidos</a>
+          <a href="perfil.html">Mi perfil</a>
+          <a href="contacto.html">Contacto</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>Todos los derechos reservados.</p>
+      <p>© 2026 PET LOVE.</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
