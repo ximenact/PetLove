@@ -1,9 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const body = document.querySelector("[data-items]"); if (!body) return;
-  const { keys, read, write, products, money, escape, updateCartCount, accountKey, currentUser } = PetLove;
+  const { keys, read, write, products, money, escape, updateCartCount, accountKey, currentUser, isLoggedIn, toast } = PetLove;
   const cartKey = accountKey(keys.cart);
   const empty = document.querySelector("[data-empty]"), layout = document.querySelector("[data-cart-layout]");
+  const checkoutButton = document.querySelector("[data-checkout-button]"), loginRequired = document.querySelector("[data-login-required]");
   function draw() {
+    const loggedIn = isLoggedIn();
+    if (checkoutButton) checkoutButton.disabled = !loggedIn;
+    loginRequired?.classList.toggle("hidden", loggedIn);
     const items = read(cartKey, []).filter(item => products.some(product => product.id === item.id));
     if (!items.length) { empty?.classList.remove("hidden"); layout?.classList.add("hidden"); body.innerHTML = ""; return; }
     empty?.classList.add("hidden"); layout?.classList.remove("hidden");
@@ -19,7 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
     write(cartKey, items); updateCartCount(); draw();
   });
   document.querySelector("[data-checkout]")?.addEventListener("submit", event => {
-    event.preventDefault(); const items = read(cartKey, []); if (!items.length) return;
+    event.preventDefault();
+    if (!isLoggedIn()) { toast("Inicia sesión para finalizar tu compra."); return; }
+    const items = read(cartKey, []); if (!items.length) return;
     const profile = read(keys.profile, {}), subtotal = items.reduce((sum, item) => sum + products.find(p => p.id === item.id).price * item.quantity, 0), total = subtotal + (subtotal >= 100000 ? 0 : 8000);
     const user = currentUser(), orders = read(keys.orders, []), order = { id: `PL-${Date.now().toString().slice(-8)}`, date: new Date().toISOString(), total, status: "Recibido", customerEmail: user?.email || "Invitado", customerName: profile.name || "Invitado", items };
     orders.unshift(order); write(keys.orders, orders); write(cartKey, []); updateCartCount();

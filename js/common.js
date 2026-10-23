@@ -48,10 +48,17 @@ window.PetLove = (() => {
     document.querySelectorAll("[data-count]").forEach(node => node.textContent = count);
   }
   function addToCart(id, quantity = 1) {
-    const product = products.find(item => item.id === id); if (!product) return;
+    if (!isLoggedIn()) { toast("Inicia sesión para agregar productos al carrito."); return false; }
+    const product = products.find(item => item.id === id); if (!product) return false;
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+      toast("La cantidad debe ser un número entero entre 1 y 99."); return false;
+    }
     const cartKey = accountKey(keys.cart), cart = read(cartKey, []), existing = cart.find(item => item.id === id);
+    if (existing && existing.quantity + quantity > 99) {
+      toast("No puedes agregar más de 99 unidades del mismo producto."); return false;
+    }
     existing ? existing.quantity += quantity : cart.push({ id, quantity });
-    write(accountKey(keys.cart), cart); updateCartCount(); toast(`${product.name} se agregó al carrito.`);
+    write(cartKey, cart); updateCartCount(); toast(`${product.name} se agregó al carrito.`); return true;
   }
   function showMessage(node, message, error = false) {
     if (!node) return; node.textContent = message; node.classList.remove("hidden");

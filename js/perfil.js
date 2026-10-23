@@ -11,7 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   paint();
   form.addEventListener("submit", event => {
-    event.preventDefault(); if (!form.reportValidity()) return;
+    event.preventDefault();
+    name.value = name.value.trim();
+    email.value = email.value.trim().toLowerCase();
+    if (!form.reportValidity()) return;
     const updated = { name: name.value.trim(), email: email.value.trim().toLowerCase(), pet: pet.value.trim() }; write(keys.profile, updated);
     if (user) { user.name = updated.name; write(keys.users, { ...PetLove.allUsers(), [user.email]: user }); write(keys.user, user); }
     paint(); showMessage(message, "Perfil actualizado correctamente.");

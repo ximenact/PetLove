@@ -1,8 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
   const { keys, read, write, showMessage, updateAccountMenu, allUsers, accountKey } = PetLove;
   document.querySelectorAll("[data-demo-form]").forEach(form => form.addEventListener("submit", event => {
-    event.preventDefault(); if (!form.reportValidity()) return;
+    event.preventDefault();
     const message = form.querySelector("[data-message]");
+    if (form.id === "register-form") {
+      const nameField = form.querySelector("#name");
+      const emailField = form.querySelector("#regemail");
+      nameField.value = nameField.value.trim();
+      emailField.value = emailField.value.trim().toLowerCase();
+      if (nameField.value.length < 2) {
+        showMessage(message, "Ingresa un nombre de al menos 2 caracteres.", true);
+        nameField.focus();
+        return;
+      }
+    } else if (form.id === "login-form") {
+      const emailField = form.querySelector("#email");
+      emailField.value = emailField.value.trim().toLowerCase();
+    } else {
+      const blankRequiredField = [...form.querySelectorAll("[required]")].find(field =>
+        field.matches("input, textarea") && !field.value.trim()
+      );
+      if (blankRequiredField) {
+        showMessage(message, "Completa este campo con información válida.", true);
+        blankRequiredField.focus();
+        return;
+      }
+    }
+    if (!form.reportValidity()) return;
     if (form.id === "register-form") {
       const password = form.querySelector("#regpass").value;
       if (password !== form.querySelector("#confirm").value) { showMessage(message, "Las contraseñas no coinciden.", true); return; }
