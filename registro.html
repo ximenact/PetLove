@@ -59,6 +59,16 @@
           <input name="confirm" id="confirm" type="password" required minlength="6" placeholder="Repite la contraseña">
         </div>
 
+        <div class="group">
+          <label for="register-role">Rol</label>
+          <select id="register-role" required>
+            <option value="" selected disabled>Selecciona tu rol</option>
+            <option value="cliente">Cliente</option>
+            <option value="empleado">Empleado</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </div>
+
         <button class="btn full">Registrarme</button>
 
         <p style="margin-top:15px;text-align:center">
@@ -103,6 +113,7 @@
     </div>
   </footer>
 
-  <script src="js/app.js" defer></script>
+  <script src="js/common.js" defer></script>
+  <script src="js/auth.js" defer></script>
 </body>
 </html>

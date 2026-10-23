@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Panel de empleado PET LOVE">
+  <title>Panel de empleado | PET LOVE</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="inicio.html">PET<span>LOVE</span></a>
+      <nav class="links">
+        <a href="inicio.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="empleado.html" aria-current="page">Panel empleado</a>
+        <a href="perfil.html">Mi perfil</a>
+      </nav>
+      <a class="cart-link" href="carrito.html">Carrito <span data-count>0</span></a>
+    </div>
+  </header>
+  <main>
+    <section class="section container">
+      <div class="head">
+        <h1>Panel de empleado</h1>
+        <p class="muted">Hola, <span data-employee-name></span>. Revisa y actualiza los pedidos.</p>
+      </div>
+      <div class="panel" style="margin-bottom:18px" data-orders-summary></div>
+      <div class="table-wrap">
+        <table class="orders">
+          <thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Productos</th><th>Estado</th></tr></thead>
+          <tbody data-employee-orders></tbody>
+        </table>
+      </div>
+      <p class="muted" data-no-orders hidden>Aún no hay pedidos registrados.</p>
+    </section>
+  </main>
+  <script src="js/common.js" defer></script>
+  <script src="js/empleado.js" defer></script>
+</body>
+</html>
