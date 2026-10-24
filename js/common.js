@@ -306,3 +306,35 @@ document.addEventListener("DOMContentLoaded", () => {
   if (location.pathname.toLowerCase().endsWith("/perfil.html") && !PetLove.isLoggedIn()) location.replace("login.html");
   if (location.pathname.toLowerCase().endsWith("/empleado.html") && (!PetLove.isLoggedIn() || PetLove.currentUser().role !== "empleado")) location.replace("login.html");
 });
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav').forEach((bar) => {
+    const links = bar.querySelector('.links');
+    if (!links) return;
+
+    let toggle = bar.querySelector('.menu-toggle');
+
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'menu-toggle';
+      toggle.setAttribute('aria-label', 'Abrir menú de navegación');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = '<span></span><span></span><span></span>';
+
+      bar.insertBefore(toggle, links);
+    }
+
+    toggle.addEventListener('click', () => {
+      const opened = links.classList.toggle('is-open');
+
+      toggle.classList.toggle('is-open', opened);
+      toggle.setAttribute('aria-expanded', String(opened));
+      toggle.setAttribute(
+        'aria-label',
+        opened
+          ? 'Cerrar menú de navegación'
+          : 'Abrir menú de navegación'
+      );
+    });
+  });
+});
