@@ -7,37 +7,250 @@ window.PetLove = (() => {
   function accountKey(base, email = localStorage.getItem(keys.session)) { return email ? `${base}:${encodeURIComponent(email)}` : `${base}:guest`; }
   const money = value => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(value);
   const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  const products = [
-    ["alimento-cachorros", "Alimento para cachorros", "Alimentos", 58900, "alimento cachorros.jpg", "Nutrición completa para acompañar el crecimiento de tu cachorro."],
-    ["hill-nutrition", "Hill's Pet Nutrition", "Alimentos", 74900, "Hill's Pet Nutrition.jpg", "Alimento nutritivo para cuidar la salud y vitalidad de tu mascota."],
-    ["gatos-adultos", "Alimento para gatos adultos", "Alimentos", 46900, "gatos adultos.jpg", "Receta balanceada para la alimentación diaria de gatos adultos."],
-    ["comida-humeda", "Comida húmeda", "Alimentos", 8900, "comida humeda.jpg", "Una porción deliciosa para complementar sus comidas."],
-    ["snacks", "Snacks para consentir", "Alimentos", 12900, "snacks.png", "Premios ideales para sus momentos de juego y aprendizaje."],
-    ["cama-perro", "Cama acogedora para perro", "Camas", 89900, "cama perro.jpg", "Un espacio cómodo para descansar y soñar."],
-    ["cama-gato", "Cama suave para gato", "Camas", 69900, "cama gato.jpg", "Un rincón cálido y suave para las siestas de tu gato."],
-    ["cama-gyp", "Cama para perros y gatos", "Camas", 79900, "cama GyP.png", "Comodidad para mascotas de todos los tamaños."],
-    ["juguetes-perro", "Set de juguetes para perro", "Juguetes", 24900, "juguetes perro.jpg", "Juguetes para estimular el movimiento y la diversión."],
-    ["juguetes-gato", "Juguete para gato", "Juguetes", 18900, "juguetes gato.png", "Diversión y actividad para despertar su instinto juguetón."],
-    ["pluma-gato", "Varita con plumas", "Juguetes", 9900, "pluma gato.jpg", "Una divertida varita para compartir tiempo de juego."],
-    ["rascador", "Rascador para gato", "Accesorios", 65900, "rascador.jpg", "Un lugar propio para afilar sus uñas y estirarse."],
-    ["arnes-perro", "Arnés para perro", "Accesorios", 32900, "arnes perro.jpg", "Un arnés cómodo para acompañarlo en cada paseo."],
-    ["arnes-gato", "Arnés para gato", "Accesorios", 29900, "arnes gato.jpg", "Un arnés ligero para explorar de forma cómoda."],
-    ["collares", "Collar para mascota", "Accesorios", 19900, "collares.jpg", "Un collar práctico para sus aventuras."],
-    ["panolleta", "Pañoleta", "Accesorios", 14900, "pañoleta.jpg", "Un detalle colorido para que luzca genial."],
-    ["guacal", "Guacal de viaje", "Accesorios", 119900, "guacal.png", "Un espacio seguro para llevarlo contigo."],
-    ["plato-perro", "Plato para perro", "Accesorios", 22900, "plato perro.8yvb00MYJ9K", "Plato resistente para servir sus comidas favoritas."],
-    ["plato-gato", "Plato para gato", "Accesorios", 18900, "plato gato.jpg", "Un plato práctico para la hora de comer."],
-    ["plato-lento", "Plato de alimentación lenta", "Accesorios", 27900, "plato lento.jpg", "Ayuda a que disfrute sus comidas con más calma."],
-    ["fuente", "Fuente de agua", "Accesorios", 99900, "fuente.jpg", "Agua en movimiento para animarlo a hidratarse."],
-    ["dispensador", "Dispensador portátil", "Accesorios", 25900, "dispensador.jpg", "Lleva agua o snacks de forma cómoda en los paseos."],
-    ["impermeable", "Impermeable para mascotas", "Accesorios", 39900, "impermeable.jpg", "Una capa ligera para salir en días lluviosos."],
-    ["cepillo", "Cepillo de cuidado", "Higiene", 16900, "cepillo.jpg", "Ayuda a mantener su pelaje limpio y cuidado."],
-    ["arena", "Arena para gato", "Higiene", 22900, "arena.jpg", "Arena práctica para mantener limpio su espacio."],
-    ["toallitas", "Toallitas húmedas", "Higiene", 12900, "toallitas.jpg", "Limpieza rápida para sus patas y pelaje."],
-    ["dental", "Cuidado dental", "Higiene", 21900, "dental.png", "Un complemento para su rutina de higiene oral."],
-    ["piel-sensible", "Cuidado para piel sensible", "Higiene", 28900, "piel sensible.webp", "Cuidado delicado para mascotas con piel sensible."],
-    ["bolsitas", "Bolsitas para paseo", "Higiene", 7900, "bolsitas.png", "Un básico práctico para mantener limpios los espacios."]
-  ].map(([id, name, category, price, image, description]) => ({ id, name, category, price, image: `img/${image}`, description }));
+const products = [
+  [
+    "alimento-cachorros",
+    "Alimento para cachorros",
+    "Alimentos",
+    58900,
+    "alimento cachorros.jpg",
+    "Fórmula rica en nutrientes esenciales diseñada para acompañar y fortalecer la etapa de crecimiento de tu cachorro."
+  ],
+  [
+    "hill-nutrition",
+    "Hill's Pet Nutrition",
+    "Alimentos",
+    74900,
+    "Hill's Pet Nutrition.jpg",
+    "Nutrición completa y equilibrada formulada específicamente para perros adultos, aportando la energía y vitalidad que necesitan a diario."
+  ],
+  [
+    "gatos-adultos",
+    "Alimento para gatos adultos",
+    "Alimentos",
+    46900,
+    "gatos adultos.jpg",
+    "Alimento seco balanceado para la nutrición diaria de felinos adultos, cuidando su salud general."
+  ],
+  [
+    "comida-humeda",
+    "Comida húmeda",
+    "Alimentos",
+    8900,
+    "comida humeda.jpg",
+    "Deliciosa porción individual de alimento húmedo, ideal para consentir a tu michi y mantenerlo hidratado."
+  ],
+  [
+    "snacks",
+    "Snacks para consentir",
+    "Alimentos",
+    12900,
+    "snacks.png",
+    "Deliciosos premios pequeños diseñados para reforzar conductas positivas en perros y gatos durante su entrenamiento.."
+  ],
+  [ 
+    "smallbreed",
+    "Alimento razas pequeñas",
+    "Alimentos",
+    27000,
+    "razas pequenas.jpg",
+    "Croquetas con un tamaño adaptado a la mandíbula de los perros de raza pequeña, facilitando su masticación."
+  ],
+  [
+    "cama-perro",
+    "Cama acogedora para perro",
+    "Camas",
+    89900,
+    "cama perro.jpg",
+    "Espacio suave, mullido y confortable para brindar un descanso óptimo a tu perro o cachorro."
+  ],
+  [
+    "cama-gato",
+    "Cama suave para gato",
+    "Camas",
+    69900,
+    "cama gato.jpg",
+    "Cama versátil y suave, adaptada especialmente para el descanso de gatos o perros de raza pequeña."
+  ],
+  [
+    "cama-gyp",
+    "Cama para perros y gatos",
+    "Camas",
+    79900,
+    "cama GyP.png",
+    "Comodidad para mascotas de todos los tamaños."
+  ],
+  [
+    "juguetes-perro",
+    "Set de juguetes para perro",
+    "Juguetes",
+    24900,
+    "juguetes perro.jpg",
+    "Variedad de juguetes resistentes pensados para morder, lanzar y evitar el aburrimiento de tu perro."
+  ],
+  [
+    "juguetes-gato",
+    "Set de Juguetes para gato",
+    "Juguetes",
+    18900,
+    "juguetes gato.png",
+    "Set variado de juguetes interactivos para despertar el instinto cazador y mantener a tu gato activo y entretenido."
+  ],
+  [
+    "pluma-gato",
+    "Varita con plumas",
+    "Juguetes",
+    9900,
+    "pluma gato.jpg",
+    "Juguete clásico con plumas para estimular la curiosidad, agilidad y el juego compartido con tu gato."
+  ],
+  [
+    "snack-dental",
+    "Snack Dental",
+    "Alimentos",
+    12500,
+    "dental.png",
+    "Botanas comestibles diseñadas para complementar la higiene bucal, reduciendo el sarro y manteniendo un aliento fresco."
+  ],
+  [
+    "arnes-perro",
+    "Arnés para perro",
+    "Accesorios",
+    32900,
+    "arnes perro.jpg",
+    "Arnés ergonómico y resistente que brinda máxima comodidad y control seguro durante los paseos diarios de tu perro.."
+  ],
+  [
+    "arnes-gato",
+    "Arnés para gato",
+    "Accesorios",
+    29900,
+    "arnes gato.jpg",
+    "Arnés ligero y seguro adaptado a la anatomía felina para pasear al aire libre con total tranquilidad."
+  ],
+  [
+    "collares",
+    "Collar para mascota",
+    "Accesorios",
+    19900,
+    "collares.jpg",
+    "Set de collares cómodos y duraderos para la identificación y estilo diario de tu mascota."
+  ],
+  [
+    "panolleta",
+    "Pañoleta",
+    "Accesorios",
+    14900,
+    "pañoleta.jpg",
+    "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."
+  ],
+  [
+    "guacal",
+    "Guacal de viaje",
+    "Accesorios",
+    119900,
+    "guacal.png",
+    "Transportadora segura y bien ventilada, esencial para viajes y visitas al veterinario."
+  ],
+  [
+    "plato-perro",
+    "Plato para perro",
+    "Alimentos",
+    22900,
+    "plato perro.8yvb00MYJ9K",
+    "Comedero doble resistente para agua y alimento, perfecto para el uso diario de tu perro."
+  ],
+  [
+    "plato-gato",
+    "Plato elevado para gato",
+    "Alimentos",
+    18900,
+    "plato gato.jpg",
+    "Kit de dos recipientes elevados (para agua y comida) que favorece una postura cómoda y ergonómica durante las comidas de tu gato."
+  ],
+  [
+    "plato-lento",
+    "Plato de alimentación lenta",
+    "Alimentos",
+    27900,
+    "plato lento.jpg",
+    "Plato interactivo diseñado para reducir la velocidad a la que come tu mascota, previniendo asfixias y mejorando la digestión."
+  ],
+  [
+    "fuente",
+    "Fuente de agua",
+    "Accesorios",
+    99900,
+    "fuente.jpg",
+    "Fuente con flujo constante de agua fresca que motiva a tu gato a beber más e hidratarse mejor.."
+  ],
+  [
+    "dispensador",
+    "Dispensador portátil",
+    "Accesorios",
+    25900,
+    "dispensador.jpg",
+    "Dispensador automático práctico que facilita la dosificación y la rutina de alimentación de tu mascota."
+  ],
+  [
+    "impermeable",
+    "Impermeable para mascotas",
+    "Accesorios",
+    39900,
+    "impermeable.jpg",
+    "Capa protectora ligera y resistente al agua para mantener a tu perro seco en los días de lluvia."
+  ],
+  [
+    "cepillo",
+    "Cepillo de cuidado",
+    "Higiene",
+    16900,
+    "cepillo.jpg",
+    "Cepillo diseñado para retirar el pelo muerto, evitar nudos y mantener el pelaje brillante y tu casa más limpia."
+  ],
+  [
+    "arena",
+    "Arena para gato",
+    "Higiene",
+    22900,
+    "arena.jpg",
+    "Arena ecológica a base de maíz, neutra en olores, altamente absorbente y totalmente biodegradable."
+  ],
+  [
+    "toallitas",
+    "Toallitas húmedas",
+    "Higiene",
+    12900,
+    "toallitas.jpg",
+    "Toallitas suaves e hipoalergénicas ideales para la limpieza rápida de patas, pelaje y zonas sensibles sin irritar la piel."
+  ],
+  [
+    "rascador",
+    "Rascador para gato",
+    "Accesorios",
+    65900,
+    "rascador.jpg",
+    "Estructura para rascar que protege tus muebles y ayuda a tu gato a afilar sus uñas y liberar estrés."
+  ],
+  [
+    "piel-sensible",
+    "Cuidado para piel sensible",
+    "Alimentos",
+    28900,
+    "piel sensible.webp",
+    "Nutrición especializada de alta digestibilidad, recomendada para perros con sensibilidad cutánea o digestiva."
+  ],
+  [
+    "bolsitas",
+    "Bolsitas para paseo",
+    "Higiene",
+    7900,
+    "bolsitas.png",
+    "Rollos de bolsas resistentes para la recolección responsable de desechos durante las caminatas."
+  ]
+]
+
+.map(([id, name, category, price, image, description]) => ({ id, name, category, price, image: `img/${image}`, description }));
   function toast(message) {
     let node = document.querySelector(".toast");
     if (!node) { node = document.createElement("div"); node.className = "toast"; node.setAttribute("role", "status"); document.body.append(node); }

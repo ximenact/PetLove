@@ -2,93 +2,60 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="PET LOVE, productos y servicios para mascotas">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Inicia sesión en PET LOVE">
   <title>Iniciar sesión | PET LOVE</title>
   <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/carrito.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/catalogo.js" defer></script>
+  <script src="js/common.js" defer></script>
+  <script src="js/contacto.js" defer></script>
+  <script src="js/detalle.js" defer></script>
+  <script src="js/inicio.js" defer></script>
+  <script src="js/pedidos.js" defer></script>
+  <script src="js/perfil.js" defer></script>
 </head>
-<body>
-  <header>
-    <div class="container nav">
-      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
-      <nav class="links">
-        <a href="inicio.html">Inicio</a>
-        <a href="catalogo.html">Catálogo</a>
-        <a href="servicios.html">Servicios</a>
-        <a href="contacto.html">Contacto</a>
-        <a href="perfil.html">Mi perfil</a>
-      </nav>
-      <a class="cart-link" href="carrito.html">🛒 Carrito <span data-count>0</span></a>
-    </div>
-  </header>
+<body class="auth-page">
 
-  <main>
-    <section class="section container split">
-      <div class="info">
-        <h2>¡Bienvenido de nuevo!</h2>
-        <p>Entra para seguir consintiendo a tus peluditos.</p>
-        <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=800&q=80" alt="Perro y gato">
-      </div>
 
-      <form class="form" id="login-form" data-demo-form data-message="Formulario validado. El inicio de sesión real necesita un servidor.">
+  <main class="auth-main">
+    <section class="container auth-layout">
+      <aside class="auth-aside">
+        <span class="eyebrow">QUÉ BUENO TENERTE DE VUELTA</span>
+        <h1>Tu mundo de mascotas te espera.</h1>
+        <p>Inicia sesión para consultar tu perfil, continuar con tus compras y estar al tanto de tus solicitudes.</p>
+        <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1000&q=85" alt="Perro y gato compartiendo un momento">
+        <div class="auth-perks">
+          <span>✓ Tus datos en un solo lugar</span>
+          <span>✓ Seguimiento de tus pedidos</span>
+          <span>✓ Atención cercana</span>
+        </div>
+      </aside>
+
+      <form class="form auth-form" id="login-form" data-demo-form>
+        <span class="form-kicker">MI CUENTA PET LOVE</span>
         <h2>Iniciar sesión</h2>
-        <p>Ingresa tus datos para continuar.</p>
-
+        <p class="muted">Ingresa con el correo y la contraseña de tu cuenta.</p>
+        
         <div class="group">
-          <label for="email">Correo electrónico</label>
-          <input id="email" type="email" required placeholder="tu@email.com">
+          <label for="email">Correo electrónico *</label>
+          <input id="email" name="email" type="email" autocomplete="email" required placeholder="tu@email.com">
         </div>
 
         <div class="group">
-          <label for="pass">Contraseña</label>
-          <input id="pass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+          <label for="pass">Contraseña *</label>
+          <input id="pass" name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="Tu contraseña">
         </div>
 
-        <button class="btn full">Iniciar sesión</button>
-
-        <p style="margin-top:15px;text-align:center">
-          ¿No tienes cuenta? <a style="color:var(--purple)" href="registro.html">Regístrate</a>
-        </p>
-
-        <div class="formmsg hidden" data-message></div>
+        <button class="btn full" type="submit">Entrar a mi cuenta</button>
+        
+        <div class="formmsg hidden" data-message role="status"></div>
+        
+        <p class="auth-switch">¿Todavía no tienes cuenta? <a href="registro.html">Crear cuenta</a></p>
       </form>
     </section>
   </main>
 
-  <footer class="petlove-footer">
-    <div class="container foot">
-      <div class="footer-brand">
-        <a class="footer-logo" href="inicio.html">🐾 PET <span>LOVE</span></a>
-        <p>Pequeños detalles, grandes momentos y mucho amor para quienes hacen nuestra vida más feliz.</p>
-        <div class="footer-message">Hecho con <span aria-label="amor">♥</span> para tus mejores amigos</div>
-      </div>
-
-      <div class="footer-column">
-        <h3>Explora</h3>
-        <nav class="foot-links" aria-label="Enlaces de navegación">
-          <a href="inicio.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
-          <a href="servicios.html">Servicios</a>
-        </nav>
-      </div>
-
-      <div class="footer-column">
-        <h3>Tu cuenta</h3>
-        <nav class="foot-links" aria-label="Enlaces de tu cuenta">
-          <a href="mis-pedidos.html">Mis pedidos</a>
-          <a href="perfil.html">Mi perfil</a>
-          <a href="contacto.html">Contacto</a>
-        </nav>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>Todos los derechos reservados.</p>
-      <p>© 2026 PET LOVE.</p>
-    </div>
-  </footer>
-
-  <script src="js/common.js" defer></script>
-  <script src="js/auth.js" defer></script>
 </body>
 </html>

@@ -2,118 +2,106 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="PET LOVE, productos y servicios para mascotas">
-  <title>Registrarse | PET LOVE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Crea tu cuenta de cliente en PET LOVE">
+  <title>Crear cuenta | PET LOVE</title>
   <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/carrito.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/catalogo.js" defer></script>
+  <script src="js/common.js" defer></script>
+  <script src="js/contacto.js" defer></script>
+  <script src="js/db.js" defer></script>
+  <script src="js/detalle.js" defer></script>
+  <script src="js/empleado.js" defer></script>
+  <script src="js/index.js" defer></script>
+  <script src="js/inicio.js" defer></script>
+  <script src="js/pedidos.js" defer></script>
+  <script src="js/perfil.js" defer></script>
 </head>
-<body>
-  <header>
-    <div class="container nav">
-      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
-      <nav class="links">
-        <a href="inicio.html">Inicio</a>
-        <a href="catalogo.html">Catálogo</a>
-        <a href="servicios.html">Servicios</a>
-        <a href="contacto.html">Contacto</a>
-        <a href="perfil.html">Mi perfil</a>
-      </nav>
-      <a class="cart-link" href="carrito.html">🛒 Carrito <span data-count>0</span></a>
-    </div>
-  </header>
+<body class="auth-page">
 
-  <main>
-    <section class="section container split">
-      <div class="info">
-        <h2>Únete a PET LOVE 💜</h2>
-        <p>Una forma sencilla de descubrir productos para tus compañeros.</p>
-        <p style="margin-top:15px">
-          ✓ Explora productos<br>
-          ✓ Revisa tu carrito<br>
-          ✓ Descubre novedades
-        </p>
-        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=800&q=80" alt="Perro feliz">
-      </div>
 
-      <form class="form" id="register-form" data-demo-form data-message="Datos validados. Para crear cuentas reales hace falta un servidor seguro.">
+  <main class="auth-main register-main">
+    <section class="container auth-layout register-layout">
+      <aside class="auth-aside">
+        <span class="eyebrow">BIENVENIDO A LA FAMILIA</span>
+        <h1>Todo para consentir a tu mejor amigo.</h1>
+        <p>Crea tu cuenta para que la experiencia PET LOVE sea más cómoda y puedas tener tu información organizada.</p>
+        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1000&q=85" alt="Perro feliz al aire libre">
+        <div class="auth-perks">
+          <span>✓ Encuentra sus productos favoritos</span>
+          <span>✓ Consulta tus pedidos</span>
+          <span>✓ Solicita ayuda cuando la necesites</span>
+        </div>
+      </aside>
+
+      <form class="form auth-form register-form" id="register-form" data-demo-form>
+        <span class="form-kicker">REGISTRO DE CLIENTE</span>
         <h2>Crear cuenta</h2>
-        <p>Completa los datos para comenzar.</p>
+        <p class="muted">Completa tus datos para comenzar.</p>
 
-        <div class="group">
-          <label for="name">Nombre completo</label>
-          <input id="name" required minlength="2" placeholder="Tu nombre">
+        <div class="form-row">
+          <div class="group">
+            <label for="name">Nombre *</label>
+            <input id="name" name="name" autocomplete="given-name" required minlength="2" placeholder="Nombre">
+          </div>
+          <div class="group">
+            <label for="lastname">Apellido *</label>
+            <input id="lastname" name="lastname" autocomplete="family-name" required minlength="2" placeholder="Apellido">
+          </div>
         </div>
 
         <div class="group">
-          <label for="regemail">Correo electrónico</label>
-          <input id="regemail" type="email" required placeholder="tu@email.com">
+          <label for="regemail">Correo electrónico *</label>
+          <input id="regemail" name="email" type="email" autocomplete="email" required placeholder="tu@email.com">
+        </div>
+
+        <div class="form-row">
+          <div class="group">
+            <label for="phone">Teléfono *</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" required minlength="7" placeholder="300 000 0000">
+          </div>
+          <div class="group">
+            <label for="city">Ciudad *</label>
+            <input id="city" name="city" autocomplete="address-level2" required placeholder="Tu ciudad">
+          </div>
         </div>
 
         <div class="group">
-          <label for="regpass">Contraseña</label>
-          <input name="password" id="regpass" type="password" required minlength="6" placeholder="Mínimo 6 caracteres">
+          <label for="address">Dirección de entrega *</label>
+          <input id="address" name="address" autocomplete="street-address" required placeholder="Calle, número, barrio y apartamento si aplica">
         </div>
 
         <div class="group">
-          <label for="confirm">Confirmar contraseña</label>
-          <input name="confirm" id="confirm" type="password" required minlength="6" placeholder="Repite la contraseña">
+          <label for="pet">Nombre de tu mascota (opcional)</label>
+          <input id="pet" name="pet" placeholder="¿Cómo se llama? ">
         </div>
 
-        <div class="group">
-          <label for="register-role">Rol</label>
-          <select id="register-role" required>
-            <option value="" selected disabled>Selecciona tu rol</option>
-            <option value="cliente">Cliente</option>
-            <option value="empleado">Empleado</option>
-            <option value="administrador">Administrador</option>
-          </select>
+        <div class="form-row">
+          <div class="group">
+            <label for="regpass">Contraseña *</label>
+            <input id="regpass" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="Mínimo 6 caracteres">
+          </div>
+          <div class="group">
+            <label for="confirm">Confirmar contraseña *</label>
+            <input id="confirm" name="confirm" type="password" autocomplete="new-password" required minlength="6" placeholder="Repite la contraseña">
+          </div>
         </div>
 
-        <button class="btn full">Registrarme</button>
+        <label class="check-label">
+          <input id="terms" name="terms" type="checkbox" required> Acepto los términos de uso y la política de privacidad de la demostración.
+        </label>
 
-        <p style="margin-top:15px;text-align:center">
-          ¿Ya tienes cuenta? <a style="color:var(--purple)" href="login.html">Inicia sesión</a>
-        </p>
+        <button class="btn full" type="submit">Crear mi cuenta</button>
 
-        <div class="formmsg hidden" data-message></div>
+        <div class="formmsg hidden" data-message role="status"></div>
+
+        <p class="auth-switch">¿Ya tienes cuenta? <a href="login.html">Iniciar sesión</a></p>
       </form>
     </section>
   </main>
 
-  <footer class="petlove-footer">
-    <div class="container foot">
-      <div class="footer-brand">
-        <a class="footer-logo" href="inicio.html">🐾 PET <span>LOVE</span></a>
-        <p>Pequeños detalles, grandes momentos y mucho amor para quienes hacen nuestra vida más feliz.</p>
-        <div class="footer-message">Hecho con <span aria-label="amor">♥</span> para tus mejores amigos</div>
-      </div>
 
-      <div class="footer-column">
-        <h3>Explora</h3>
-        <nav class="foot-links" aria-label="Enlaces de navegación">
-          <a href="inicio.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
-          <a href="servicios.html">Servicios</a>
-        </nav>
-      </div>
-
-      <div class="footer-column">
-        <h3>Tu cuenta</h3>
-        <nav class="foot-links" aria-label="Enlaces de tu cuenta">
-          <a href="mis-pedidos.html">Mis pedidos</a>
-          <a href="perfil.html">Mi perfil</a>
-          <a href="contacto.html">Contacto</a>
-        </nav>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>Todos los derechos reservados.</p>
-      <p>© 2026 PET LOVE.</p>
-    </div>
-  </footer>
-
-  <script src="js/common.js" defer></script>
-  <script src="js/auth.js" defer></script>
 </body>
 </html>
