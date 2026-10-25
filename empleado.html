@@ -6,37 +6,131 @@
   <meta name="description" content="Panel de empleado PET LOVE">
   <title>Panel de empleado | PET LOVE</title>
   <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/common.js" defer></script>
+  <script src="js/empleado.js" defer></script>
 </head>
 <body>
   <header>
     <div class="container nav">
-      <a class="brand" href="inicio.html">PET<span>LOVE</span></a>
-      <nav class="links">
+      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
+      <nav class="links" aria-label="Navegación principal">
         <a href="inicio.html">Inicio</a>
         <a href="catalogo.html">Catálogo</a>
-        <a href="empleado.html" aria-current="page">Panel empleado</a>
+        <a href="servicios.html">Servicios</a>
+        <a href="contacto.html">Contacto</a>
         <a href="perfil.html">Mi perfil</a>
+        <a href="empleado.html" aria-current="page" data-role-link>Panel empleado</a>
       </nav>
-      <a class="cart-link" href="carrito.html">Carrito <span data-count>0</span></a>
+      <!-- Espacio invisible para centrar el menú -->
+      <a class="cart-link" href="inicio.html" style="visibility:hidden" aria-hidden="true" tabindex="-1">Carrito 0</a>
     </div>
   </header>
-  <main>
+
+  <main id="main-content">
     <section class="section container">
       <div class="head">
+        <span class="eyebrow">GESTIÓN PET LOVE</span>
         <h1>Panel de empleado</h1>
-        <p class="muted">Hola, <span data-employee-name></span>. Revisa y actualiza los pedidos.</p>
+        <p class="muted">Hola, <span data-employee-name></span>. Consulta los pedidos, actualiza su estado y responde las solicitudes de servicio.</p>
       </div>
-      <div class="panel" style="margin-bottom:18px" data-orders-summary></div>
-      <div class="table-wrap">
-        <table class="orders">
-          <thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Productos</th><th>Estado</th></tr></thead>
-          <tbody data-employee-orders></tbody>
-        </table>
+
+      <div class="filters" role="tablist" aria-label="Secciones del panel">
+        <button class="filter active" type="button" role="tab" aria-selected="true" data-tab="pedidos">📦 Pedidos</button>
+        <button class="filter" type="button" role="tab" aria-selected="false" data-tab="servicios">🛎️ Servicios (<span data-pending-count>0</span> pendientes)</button>
       </div>
-      <p class="muted" data-no-orders hidden>Aún no hay pedidos registrados.</p>
+
+      <!-- ===== PEDIDOS ===== -->
+      <div data-panel="pedidos">
+        <div class="grid" role="group" aria-label="Resumen de pedidos">
+          <article class="panel">
+            <h3>Pedidos totales</h3>
+            <p class="muted"><strong data-orders-total>0</strong></p>
+          </article>
+          <article class="panel">
+            <h3>En proceso</h3>
+            <p class="muted"><strong data-orders-active>0</strong></p>
+          </article>
+          <article class="panel">
+            <h3>Entregados</h3>
+            <p class="muted"><strong data-orders-delivered>0</strong></p>
+          </article>
+          <article class="panel">
+            <h3>Cancelados</h3>
+            <p class="muted"><strong data-orders-cancelled>0</strong></p>
+          </article>
+        </div>
+
+        <section class="section" aria-labelledby="orders-title">
+          <div class="panel">
+            <h2 id="orders-title">Pedidos registrados</h2>
+            <div class="group">
+              <label for="order-filter">Filtrar por estado</label>
+              <select id="order-filter" data-order-filter>
+                <option value="todos">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en preparacion">En preparación</option>
+                <option value="empaquetado">Empaquetado</option>
+                <option value="enviado">Enviado</option>
+                <option value="entregado">Entregado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap" data-orders-table>
+            <table class="orders">
+              <thead>
+                <tr>
+                  <th scope="col">Pedido</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">Productos</th>
+                  <th scope="col">Estado</th>
+                </tr>
+              </thead>
+              <tbody data-employee-orders></tbody>
+            </table>
+          </div>
+          <p class="muted" data-no-orders hidden>Aún no hay pedidos registrados.</p>
+          <p class="muted" data-no-filtered-orders hidden>No hay pedidos con este estado.</p>
+        </section>
+      </div>
+
+      <!-- ===== SERVICIOS ===== -->
+      <div data-panel="servicios" hidden>
+        <div class="grid" role="group" aria-label="Resumen de solicitudes de servicio">
+          <article class="panel">
+            <h3>Solicitudes totales</h3>
+            <p class="muted"><strong data-services-total>0</strong></p>
+          </article>
+          <article class="panel">
+            <h3>Esperando respuesta</h3>
+            <p class="muted"><strong data-services-pending>0</strong></p>
+          </article>
+          <article class="panel">
+            <h3>Contestadas</h3>
+            <p class="muted"><strong data-services-answered>0</strong></p>
+          </article>
+        </div>
+
+        <section class="section" aria-labelledby="services-title">
+          <div class="panel">
+            <h2 id="services-title">Solicitudes de servicio</h2>
+            <div class="group">
+              <label for="service-filter">Filtrar por estado</label>
+              <select id="service-filter" data-service-filter>
+                <option value="todos">Todas las solicitudes</option>
+                <option value="pendientes">Esperando respuesta</option>
+                <option value="contestadas">Contestadas</option>
+              </select>
+            </div>
+          </div>
+          <div class="status-list" data-service-requests style="margin-top:16px"></div>
+          <p class="muted" data-no-services hidden>Aún no hay solicitudes de servicio.</p>
+          <p class="muted" data-no-filtered-services hidden>No hay solicitudes con este estado.</p>
+        </section>
+      </div>
     </section>
   </main>
-  <script src="js/common.js" defer></script>
-  <script src="js/empleado.js" defer></script>
 </body>
 </html>

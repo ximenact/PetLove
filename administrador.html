@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Panel de administración de PET LOVE">
+  <title>Panel de administrador | PET LOVE</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/common.js" defer></script>
+  <script src="js/administrador.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
+      <nav class="links" aria-label="Navegación principal">
+        <a href="inicio.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="servicios.html">Servicios</a>
+        <a href="administrador.html" aria-current="page" data-role-link>Panel administrador</a>
+      </nav>
+      <button class="btn outline" type="button" data-logout>Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container">
+      <div class="head">
+        <span class="eyebrow">GESTIÓN PET LOVE</span>
+        <h1>Panel de administrador</h1>
+        <p class="muted">Hola, <span data-admin-name></span>. Administra las operaciones, el catálogo y las cuentas.</p>
+      </div>
+
+      <p class="formmsg hidden" data-admin-message role="status"></p>
+
+      <div class="filters" role="tablist" aria-label="Secciones de administración">
+        <button class="filter active" type="button" role="tab" aria-selected="true" data-tab="pedidos">📦 Pedidos</button>
+        <button class="filter" type="button" role="tab" aria-selected="false" data-tab="solicitudes">🛎️ Solicitudes</button>
+        <button class="filter" type="button" role="tab" aria-selected="false" data-tab="productos">🐾 Productos</button>
+        <button class="filter" type="button" role="tab" aria-selected="false" data-tab="categorias">🏷️ Categorías</button>
+        <button class="filter" type="button" role="tab" aria-selected="false" data-tab="servicios">✨ Servicios</button>
+        <button class="filter" type="button" role="tab" aria-selected="false" data-tab="usuarios">👥 Usuarios</button>
+      </div>
+
+      <section data-panel="pedidos" aria-label="Gestión de pedidos">
+        <div class="grid" role="group" aria-label="Resumen de pedidos">
+          <article class="panel"><h3>Pedidos totales</h3><p class="muted"><strong data-orders-total>0</strong></p></article>
+          <article class="panel"><h3>En proceso</h3><p class="muted"><strong data-orders-active>0</strong></p></article>
+          <article class="panel"><h3>Entregados</h3><p class="muted"><strong data-orders-delivered>0</strong></p></article>
+          <article class="panel"><h3>Cancelados</h3><p class="muted"><strong data-orders-cancelled>0</strong></p></article>
+        </div>
+        <section class="section" aria-labelledby="admin-orders-title">
+          <div class="panel">
+            <h2 id="admin-orders-title">Pedidos registrados</h2>
+            <div class="group">
+              <label for="admin-order-filter">Filtrar por estado</label>
+              <select id="admin-order-filter" data-order-filter>
+                <option value="todos">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en preparacion">En preparación</option>
+                <option value="empaquetado">Empaquetado</option>
+                <option value="enviado">Enviado</option>
+                <option value="entregado">Entregado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap" data-orders-table>
+            <table class="orders">
+              <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col">Fecha</th><th scope="col">Total</th><th scope="col">Productos</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead>
+              <tbody data-admin-orders></tbody>
+            </table>
+          </div>
+          <p class="muted" data-no-orders hidden>Aún no hay pedidos registrados.</p>
+          <p class="muted" data-no-filtered-orders hidden>No hay pedidos con este estado.</p>
+        </section>
+      </section>
+
+      <section data-panel="solicitudes" aria-label="Gestión de solicitudes" hidden>
+        <div class="grid" role="group" aria-label="Resumen de solicitudes">
+          <article class="panel"><h3>Solicitudes totales</h3><p class="muted"><strong data-requests-total>0</strong></p></article>
+          <article class="panel"><h3>Pendientes</h3><p class="muted"><strong data-requests-pending>0</strong></p></article>
+          <article class="panel"><h3>Contestadas</h3><p class="muted"><strong data-requests-answered>0</strong></p></article>
+        </div>
+        <section class="section" aria-labelledby="admin-requests-title">
+          <div class="panel">
+            <h2 id="admin-requests-title">Solicitudes de servicio</h2>
+            <div class="group">
+              <label for="admin-request-filter">Filtrar solicitudes</label>
+              <select id="admin-request-filter" data-request-filter>
+                <option value="todas">Todas</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="contestado">Contestadas</option>
+              </select>
+            </div>
+          </div>
+          <div class="status-list" data-admin-requests></div>
+          <p class="muted" data-no-requests hidden>Aún no hay solicitudes registradas.</p>
+          <p class="muted" data-no-filtered-requests hidden>No hay solicitudes con este estado.</p>
+        </section>
+      </section>
+
+      <section data-panel="productos" aria-label="Administración de productos" hidden>
+        <section class="section">
+          <form class="panel" data-entity-form="products">
+            <h2 data-form-title>Crear producto</h2>
+            <input type="hidden" name="id">
+            <div class="form-row">
+              <div class="group"><label for="product-name">Nombre *</label><input id="product-name" name="nombre" required></div>
+              <div class="group"><label for="product-category">Categoría</label><select id="product-category" name="id_categorias"><option value="">Sin categoría</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="group"><label for="product-price">Precio *</label><input id="product-price" name="precio" type="number" min="0" max="99999999" step="0.01" required></div>
+              <div class="group"><label for="product-stock">Stock</label><input id="product-stock" name="stock" type="number" min="0" step="1" value="0"></div>
+            </div>
+            <div class="group"><label for="product-image">Ruta o URL de imagen</label><input id="product-image" name="imagen_url" placeholder="img/imagen.jpg o https://..."></div>
+            <div class="group"><label for="product-description">Descripción</label><textarea id="product-description" name="descripcion" rows="3"></textarea></div>
+            <button class="btn" type="submit" data-submit>Crear producto</button>
+            <button class="btn outline" type="button" data-cancel hidden>Cancelar edición</button>
+          </form>
+          <div class="table-wrap">
+            <table class="orders"><thead><tr><th scope="col">Producto</th><th scope="col">Categoría</th><th scope="col">Precio</th><th scope="col">Stock</th><th scope="col">Acciones</th></tr></thead><tbody data-product-list></tbody></table>
+          </div>
+          <p class="muted" data-empty="products" hidden>No hay productos registrados.</p>
+        </section>
+      </section>
+
+      <section data-panel="categorias" aria-label="Administración de categorías" hidden>
+        <section class="section">
+          <form class="panel" data-entity-form="categories">
+            <h2 data-form-title>Crear categoría</h2>
+            <input type="hidden" name="id">
+            <div class="group"><label for="category-name">Nombre *</label><input id="category-name" name="nombre" required></div>
+            <div class="group"><label for="category-description">Descripción</label><textarea id="category-description" name="descripcion" rows="3"></textarea></div>
+            <button class="btn" type="submit" data-submit>Crear categoría</button>
+            <button class="btn outline" type="button" data-cancel hidden>Cancelar edición</button>
+          </form>
+          <div class="table-wrap">
+            <table class="orders"><thead><tr><th scope="col">Categoría</th><th scope="col">Descripción</th><th scope="col">Acciones</th></tr></thead><tbody data-category-list></tbody></table>
+          </div>
+          <p class="muted" data-empty="categories" hidden>No hay categorías registradas.</p>
+        </section>
+      </section>
+
+      <section data-panel="servicios" aria-label="Administración del catálogo de servicios" hidden>
+        <section class="section">
+          <form class="panel" data-entity-form="services">
+            <h2 data-form-title>Crear servicio</h2>
+            <input type="hidden" name="id">
+            <div class="group"><label for="service-title">Título *</label><input id="service-title" name="titulo" required></div>
+            <div class="group"><label for="service-description">Descripción *</label><textarea id="service-description" name="descripcion" rows="3" required></textarea></div>
+            <button class="btn" type="submit" data-submit>Crear servicio</button>
+            <button class="btn outline" type="button" data-cancel hidden>Cancelar edición</button>
+          </form>
+          <div class="table-wrap">
+            <table class="orders"><thead><tr><th scope="col">Servicio</th><th scope="col">Descripción</th><th scope="col">Acciones</th></tr></thead><tbody data-service-list></tbody></table>
+          </div>
+          <p class="muted" data-empty="services" hidden>No hay servicios registrados.</p>
+        </section>
+      </section>
+
+      <section data-panel="usuarios" aria-label="Administración de usuarios" hidden>
+        <section class="section">
+          <div class="panel"><h2>Usuarios registrados</h2><p class="muted">Puedes actualizar el rol de las demás cuentas. Tu propio rol no se puede cambiar desde aquí.</p></div>
+          <div class="table-wrap">
+            <table class="orders"><thead><tr><th scope="col">Nombre</th><th scope="col">Correo</th><th scope="col">Rol</th><th scope="col">Registro</th><th scope="col">Acción</th></tr></thead><tbody data-user-list></tbody></table>
+          </div>
+          <p class="muted" data-empty="users" hidden>No hay usuarios registrados.</p>
+        </section>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

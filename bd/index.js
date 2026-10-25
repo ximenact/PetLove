@@ -15,7 +15,7 @@ app.set('trust proxy', 1);
 // CORS: si defines FRONTEND_URL en el .env (varias direcciones separadas por coma),
 // solo esas páginas pueden usar la API. Si no lo defines, cualquiera puede (ideal para desarrollar).
 const origenesPermitidos = (process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
-app.use(cors(origenesPermitidos.length ? { origin: origenesPermitidos } : undefined));
+app.use(cors());
 
 app.use(express.json());
 
@@ -702,29 +702,6 @@ app.delete('/api/sugerencias/:id', exigirRol('administrador'), async (req, res) 
 });
 
 
-// Si ninguna ruta coincide
-app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' });
-});
-
-// Errores generales (por ejemplo, un JSON mal escrito)
-app.use((err, req, res, next) => {
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido' });
-  }
-  console.error(err);
-  res.status(500).json({ error: 'Error interno del servidor' });
-});
-
-
-// ===================== ARRANCAR EL SERVIDOR =====================
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
-
-
 // ===================== PEDIDOS =====================
 
 const ESTADOS_PEDIDO = ['pendiente', 'en preparacion', 'empaquetado', 'enviado', 'entregado', 'cancelado'];
@@ -923,4 +900,65 @@ app.put('/api/pedidos/:id/estado', exigirRol('empleado', 'administrador'), async
   } finally {
     conexion.release();
   }
+});
+
+
+// Borrar un pedido (solo administrador).
+// Si el pedido no estaba cancelado, los productos vuelven al inventario antes de borrarlo.
+app.delete('/api/pedidos/:id', exigirRol('administrador'), async (req, res) => {
+  if (!idValido(req.params.id)) return res.status(400).json({ error: 'Id no válido' });
+
+  const conexion = await pool.connect();
+  try {
+    await conexion.query('BEGIN');
+    const actual = await conexion.query('SELECT * FROM pedidos WHERE id_pedidos = $1 FOR UPDATE', [req.params.id]);
+    if (actual.rows.length === 0) {
+      await conexion.query('ROLLBACK');
+      return res.status(404).json({ error: 'Pedido no encontrado' });
+    }
+    const pedido = actual.rows[0];
+
+    if (pedido.estado !== 'cancelado') {
+      await conexion.query(
+        `UPDATE productos p SET stock = p.stock + d.cantidad
+         FROM detalle_pedido d
+         WHERE d.id_productos = p.id_productos AND d.id_pedidos = $1`,
+        [pedido.id_pedidos]
+      );
+    }
+
+    await conexion.query('DELETE FROM detalle_pedido WHERE id_pedidos = $1', [pedido.id_pedidos]);
+    await conexion.query('DELETE FROM pedidos WHERE id_pedidos = $1', [pedido.id_pedidos]);
+    await conexion.query('COMMIT');
+    res.json({ mensaje: 'Pedido eliminado', pedido });
+  } catch (error) {
+    try { await conexion.query('ROLLBACK'); } catch (e) { /* ya estaba cerrado */ }
+    console.error(error);
+    res.status(500).json({ error: 'Error al eliminar el pedido' });
+  } finally {
+    conexion.release();
+  }
+});
+
+// ===================== MANEJO DE ERRORES Y ARRANQUE =====================
+// IMPORTANTE: Estas líneas siempre deben ir al final, después de todas las rutas.
+
+// Si ninguna ruta coincide
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
+// Errores generales (por ejemplo, un JSON mal escrito)
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido' });
+  }
+  console.error(err);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
+
+// Arrancar el servidor AL FINAL de todo
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

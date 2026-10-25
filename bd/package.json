@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
-  "start": "node index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ximenact/PetLove.git"
@@ -18,12 +17,9 @@
   },
   "homepage": "https://github.com/ximenact/PetLove#readme",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",
     "express": "^5.3.0",
-    "express-rate-limit": "^8.7.1",
-    "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.1"
   }
 }
