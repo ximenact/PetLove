@@ -1,19 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("register-form");
   if (!form) return;
-  
+
   const message = form.querySelector("[data-message]");
   const submit = form.querySelector('button[type="submit"]');
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
-    console.log("¡Botón presionado! Iniciando validación..."); // 👈 Mensaje para saber si llega aquí
-    
-    const nombre1 = document.getElementById("name")?.value.trim() || "";
-    const nombre2 = document.getElementById("lastname")?.value.trim() || "";
-    const nombreCompleto = `${nombre1} ${nombre2}`.trim();
-    
-    const correo = document.getElementById("regemail")?.value.trim().toLowerCase();
+
+    const nombre = document.getElementById("name")?.value.trim() || "";
+    const apellido = document.getElementById("lastname")?.value.trim() || "";
+    const correo = document.getElementById("regemail")?.value.trim().toLowerCase() || "";
+    const telefono = document.getElementById("phone")?.value.trim() || "";
+    const ciudad = document.getElementById("city")?.value.trim() || "";
+    const direccion = document.getElementById("address")?.value.trim() || "";
+    const nombre_mascota = document.getElementById("pet")?.value.trim() || "";
     const clave = document.getElementById("regpass")?.value;
     const confirmar = document.getElementById("confirm")?.value;
 
@@ -24,19 +25,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (submit) submit.disabled = true;
     try {
-      console.log("Haciendo petición a la API..."); // 👈 Mensaje de control
       await PetLove.api("/api/auth/registro", {
         method: "POST",
-        body: JSON.stringify({ 
-          nombre: nombreCompleto, 
-          correo: correo, 
-          contraseña: clave 
+        body: JSON.stringify({
+          nombre,
+          apellido,
+          correo,
+          contraseña: clave,
+          telefono,
+          ciudad,
+          direccion,
+          nombre_mascota
         })
       });
       PetLove.showMessage(message, "Cuenta creada. Ahora puedes iniciar sesión.");
       setTimeout(() => location.href = "login.html", 900);
     } catch (error) {
-      console.error("Error devuelto por el servidor:", error); // 👈 Para ver el error exacto
+      console.error("Error devuelto por el servidor:", error);
       PetLove.showMessage(message, error.message, true);
     } finally {
       if (submit) submit.disabled = false;

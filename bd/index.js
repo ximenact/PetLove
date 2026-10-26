@@ -343,12 +343,20 @@ const correoValido = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
 // Registrarse: siempre crea una cuenta con rol 'cliente'
 app.post('/api/auth/registro', async (req, res) => {
   const body = req.body || {};
-  const nombre = String(body.nombre || '').trim();
-  const correo = String(body.correo || '').trim().toLowerCase();
+  const nombre = String(body.nombre ?? body.name ?? '').trim();
+  const apellido = String(body.apellido ?? body.lastname ?? '').trim();
+  const correo = String(body.correo ?? body.email ?? '').trim().toLowerCase();
   const clave = String(body.contraseña ?? body.password ?? '');
+  const telefono = String(body.telefono ?? body.phone ?? '').trim();
+  const ciudad = String(body.ciudad ?? body.city ?? '').trim();
+  const direccion = String(body.direccion ?? body.address ?? '').trim();
+  const nombre_mascota = String(body.nombre_mascota ?? body.pet ?? '').trim();
 
   if (nombre.length < 2 || nombre.length > 100) {
     return res.status(400).json({ error: 'El nombre debe tener entre 2 y 100 caracteres' });
+  }
+  if (apellido.length < 2 || apellido.length > 100) {
+    return res.status(400).json({ error: 'El apellido debe tener entre 2 y 100 caracteres' });
   }
   if (!correoValido(correo) || correo.length > 150) {
     return res.status(400).json({ error: 'El correo no es válido' });
@@ -356,15 +364,27 @@ app.post('/api/auth/registro', async (req, res) => {
   if (clave.length < 6 || clave.length > 72) {
     return res.status(400).json({ error: 'La contraseña debe tener entre 6 y 72 caracteres' });
   }
+  if (telefono.length < 7 || telefono.length > 20) {
+    return res.status(400).json({ error: 'El teléfono debe tener entre 7 y 20 caracteres' });
+  }
+  if (ciudad.length < 2 || ciudad.length > 100) {
+    return res.status(400).json({ error: 'La ciudad es obligatoria' });
+  }
+  if (direccion.length < 5 || direccion.length > 200) {
+    return res.status(400).json({ error: 'La dirección debe tener entre 5 y 200 caracteres' });
+  }
+  if (nombre_mascota.length > 100) {
+    return res.status(400).json({ error: 'El nombre de la mascota es muy largo' });
+  }
 
   try {
     const claveProtegida = await bcrypt.hash(clave, 10);
     // OJO: no se recibe el rol desde el formulario; la base pone 'cliente' sola
     const result = await pool.query(
-      `INSERT INTO usuarios (nombre, correo, "contraseña")
-       VALUES ($1, $2, $3)
-       RETURNING id_usuarios, nombre, correo, rol, fecha_registro`,
-      [nombre, correo, claveProtegida]
+      `INSERT INTO usuarios (nombre, apellido, correo, "contraseña", telefono, ciudad, direccion, nombre_mascota)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id_usuarios, nombre, apellido, correo, rol, fecha_registro`,
+      [nombre, apellido, correo, claveProtegida, telefono, ciudad, direccion, nombre_mascota || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
