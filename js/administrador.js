@@ -21,9 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const endpoints = { products: "/api/productos", categories: "/api/categorias", services: "/api/servicios" };
   const ownId = Number(user.id_usuarios ?? user.id);
 
-  // Usamos PetLove.api (common.js): envía el token (Authorization: Bearer ...)
-  // y llama al servidor correcto (localhost:3000 en local). Sin esto, el servidor
-  // respondería 401 porque no sabría quién eres.
   const api = PetLove.api;
 
   $("[data-admin-name]").textContent = user.name || user.nombre || user.email || user.correo;
@@ -56,17 +53,31 @@ document.addEventListener("DOMContentLoaded", () => {
     if (el) el.hidden = !isEmpty;
   }
 
+  const globalSearchInput = $("#admin-global-search");
+  const searchHint = $("[data-search-hint]");
+
+  function getSearchQuery() {
+    return globalSearchInput ? globalSearchInput.value.toLowerCase().trim() : "";
+  }
+
   function renderCategories() {
+    const query = getSearchQuery();
+    let items = collections.categories;
+    if (query) {
+      items = items.filter(c => (c.nombre || "").toLowerCase().includes(query) || (c.descripcion || "").toLowerCase().includes(query));
+    }
     const list = $("[data-category-list]");
-    list.innerHTML = collections.categories.map(category => {
-      const id = Number(category.id_categorias);
-      return `<tr>
-        <td>${escape(category.nombre)}</td>
-        <td>${escape(category.descripcion || "Sin descripción")}</td>
-        <td><button class="btn outline" type="button" data-edit-category="${id}">Editar</button>
-        <button class="btn" type="button" data-delete-category="${id}">Eliminar</button></td>
-      </tr>`;
-    }).join("");
+    if (list) {
+      list.innerHTML = items.map(category => {
+        const id = Number(category.id_categorias);
+        return `<tr>
+          <td>${escape(category.nombre)}</td>
+          <td>${escape(category.descripcion || "Sin descripción")}</td>
+          <td><button class="btn outline" type="button" data-edit-category="${id}">Editar</button>
+          <button class="btn" type="button" data-delete-category="${id}">Eliminar</button></td>
+        </tr>`;
+      }).join("");
+    }
     setCollectionEmpty("categories", collections.categories.length === 0);
     const select = $("[name='id_categorias']");
     if (!select) return;
@@ -80,7 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderProducts() {
     const productList = $("[data-product-list]");
     if (!productList) return;
-    productList.innerHTML = collections.products.map(product =>
+    const query = getSearchQuery();
+    let items = collections.products;
+    if (query) {
+      items = items.filter(product => {
+        const nameStr = (product.nombre || "").toLowerCase();
+        const catStr = (product.categoria || "").toLowerCase();
+        const descStr = (product.descripcion || "").toLowerCase();
+        return nameStr.includes(query) || catStr.includes(query) || descStr.includes(query);
+      });
+    }
+    productList.innerHTML = items.map(product =>
       `<tr>
         <td>${escape(product.nombre)}</td>
         <td>${escape(product.categoria || "Sin categoría")}</td>
@@ -96,7 +117,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderServices() {
     const serviceList = $("[data-service-list]");
     if (!serviceList) return;
-    serviceList.innerHTML = collections.services.map(service =>
+    const query = getSearchQuery();
+    let items = collections.services;
+    if (query) {
+      items = items.filter(s => (s.titulo || "").toLowerCase().includes(query) || (s.descripcion || "").toLowerCase().includes(query));
+    }
+    serviceList.innerHTML = items.map(service =>
       `<tr>
         <td>${escape(service.titulo)}</td>
         <td>${escape(service.descripcion)}</td>
@@ -110,7 +136,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderUsers() {
     const userList = $("[data-user-list]");
     if (!userList) return;
-    userList.innerHTML = collections.users.map(account => {
+    const query = getSearchQuery();
+    let items = collections.users;
+    if (query) {
+      items = items.filter(account => {
+        const nameStr = (account.nombre || "").toLowerCase();
+        const emailStr = (account.correo || "").toLowerCase();
+        return nameStr.includes(query) || emailStr.includes(query);
+      });
+    }
+    userList.innerHTML = items.map(account => {
       const id = Number(account.id_usuarios);
       const isSelf = id === ownId;
       const roleOptions = roles.map(role =>
@@ -131,9 +166,19 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderOrders() {
     const filterSelect = $("[data-order-filter]");
     const filter = filterSelect ? filterSelect.value : "todos";
-    const visible = filter === "todos" ? collections.orders : collections.orders.filter(order => order.estado === filter);
-    const activeStates = ["pendiente", "en preparacion", "empaquetado", "enviado"];
+    let visible = filter === "todos" ? collections.orders : collections.orders.filter(order => order.estado === filter);
     
+    const query = getSearchQuery();
+    if (query) {
+      visible = visible.filter(order => {
+        const idStr = String(order.id_pedidos);
+        const clientStr = (order.cliente || "").toLowerCase();
+        const emailStr = (order.correo || "").toLowerCase();
+        return idStr.includes(query) || clientStr.includes(query) || emailStr.includes(query);
+      });
+    }
+
+    const activeStates = ["pendiente", "en preparacion", "empaquetado", "enviado"];
     const ordersTotal = $("[data-orders-total]");
     const ordersActive = $("[data-orders-active]");
     const ordersDelivered = $("[data-orders-delivered]");
@@ -175,9 +220,21 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderRequests() {
     const filterSelect = $("[data-request-filter]");
     const filter = filterSelect ? filterSelect.value : "todas";
-    const visible = collections.requests.filter(request => filter === "todas" || request.estado === filter);
-    const pending = collections.requests.filter(request => request.estado === "pendiente").length;
+    let visible = collections.requests.filter(request => filter === "todas" || request.estado === filter);
     
+    const query = getSearchQuery();
+    if (query) {
+      visible = visible.filter(request => {
+        const idStr = String(request.id_solicitud_servicios);
+        const serviceStr = (request.servicio || "").toLowerCase();
+        const clientStr = (request.cliente || "").toLowerCase();
+        const emailStr = (request.correo || "").toLowerCase();
+        const descStr = (request.descripcion || "").toLowerCase();
+        return idStr.includes(query) || serviceStr.includes(query) || clientStr.includes(query) || emailStr.includes(query) || descStr.includes(query);
+      });
+    }
+
+    const pending = collections.requests.filter(request => request.estado === "pendiente").length;
     const requestsTotal = $("[data-requests-total]");
     const requestsPending = $("[data-requests-pending]");
     const requestsAnswered = $("[data-requests-answered]");
@@ -504,24 +561,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Funcionalidad del Buscador Global ---
-  const globalSearchInput = $("#admin-global-search");
-  const searchHint = $("[data-search-hint]");
-
+  // --- Buscador Global Actualizado (Incluye Solicitudes) ---
   if (globalSearchInput) {
-    globalSearchInput.addEventListener("input", (e) => {
-      const query = e.target.value.toLowerCase().trim();
+    globalSearchInput.addEventListener("input", () => {
+      const query = getSearchQuery();
 
       if (!query) {
         if (searchHint) {
           searchHint.textContent = "";
           searchHint.hidden = true;
         }
-        renderOrders();
-        renderProducts();
-        renderUsers();
+        renderAll();
         return;
       }
+
+      renderAll();
 
       const filteredOrders = collections.orders.filter(order => {
         const idStr = String(order.id_pedidos);
@@ -543,62 +597,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return nameStr.includes(query) || emailStr.includes(query);
       });
 
-      const ordersTableBody = $("[data-admin-orders]");
-      if (ordersTableBody) {
-        ordersTableBody.innerHTML = filteredOrders.map(order => {
-          const items = (Array.isArray(order.items) ? order.items : []).map(item =>
-            `${escape(item.nombre || "Producto")} × ${Number(item.cantidad) || 0}`
-          ).join(", ");
-          const stateOptions = orderStates.map(([value, label]) =>
-            `<option value="${value}"${order.estado === value ? " selected" : ""}${order.estado === "cancelado" && value !== "cancelado" ? " disabled" : ""}>${label}</option>`
-          ).join("");
-          return `<tr>
-            <td>${Number(order.id_pedidos)}</td>
-            <td>${escape(order.cliente || "Cliente")}<br><small>${escape(order.correo || "")}</small></td>
-            <td>${escape(formatDate(order.fecha))}</td>
-            <td>${PetLove.money(Number(order.total) || 0)}</td>
-            <td>${items || "Sin productos"}</td>
-            <td><div class="group"><select data-order-state="${Number(order.id_pedidos)}" aria-label="Estado del pedido ${Number(order.id_pedidos)}"${order.estado === "cancelado" ? " disabled" : ""}>${stateOptions}</select></div></td>
-            <td><button class="btn" type="button" data-delete-order="${Number(order.id_pedidos)}">Eliminar</button></td>
-          </tr>`;
-        }).join("");
-      }
-
-      const productListBody = $("[data-product-list]");
-      if (productListBody) {
-        productListBody.innerHTML = filteredProducts.map(product =>
-          `<tr>
-            <td>${escape(product.nombre)}</td>
-            <td>${escape(product.categoria || "Sin categoría")}</td>
-            <td>${PetLove.money(Number(product.precio) || 0)}</td>
-            <td>${Number(product.stock) || 0}</td>
-            <td><button class="btn outline" type="button" data-edit-product="${Number(product.id_productos)}">Editar</button>
-            <button class="btn" type="button" data-delete-product="${Number(product.id_productos)}">Eliminar</button></td>
-          </tr>`
-        ).join("");
-      }
-
-      const userListBody = $("[data-user-list]");
-      if (userListBody) {
-        userListBody.innerHTML = filteredUsers.map(account => {
-          const id = Number(account.id_usuarios);
-          const isSelf = id === ownId;
-          const roleOptions = roles.map(role =>
-            `<option value="${role}"${account.rol === role ? " selected" : ""}>${role[0].toUpperCase()}${role.slice(1)}</option>`
-          ).join("");
-          return `<tr>
-            <td>${escape(account.nombre)}</td>
-            <td>${escape(account.correo)}</td>
-            <td><div class="group"><select data-user-role="${id}" aria-label="Rol de ${escape(account.nombre)}"${isSelf ? " disabled" : ""}>${roleOptions}</select></div></td>
-            <td>${escape(formatDate(account.fecha_registro))}</td>
-            <td><div style="display:flex;gap:8px;flex-wrap:nowrap"><button class="btn" type="button" data-save-role="${id}"${isSelf ? " disabled title='No puedes cambiar tu propio rol'" : ""}>Guardar rol</button>
-            <button class="btn outline" type="button" data-delete-user="${id}"${isSelf ? " disabled title='No puedes borrar tu propia cuenta'" : ""}>Eliminar</button></div></td>
-          </tr>`;
-        }).join("");
-      }
+      const filteredRequests = collections.requests.filter(request => {
+        const idStr = String(request.id_solicitud_servicios);
+        const serviceStr = (request.servicio || "").toLowerCase();
+        const clientStr = (request.cliente || "").toLowerCase();
+        const emailStr = (request.correo || "").toLowerCase();
+        const descStr = (request.descripcion || "").toLowerCase();
+        return idStr.includes(query) || serviceStr.includes(query) || clientStr.includes(query) || emailStr.includes(query) || descStr.includes(query);
+      });
 
       if (searchHint) {
-        searchHint.textContent = `Resultados para "${query}": ${filteredOrders.length} pedido(s), ${filteredProducts.length} producto(s), ${filteredUsers.length} usuario(s) encontrado(s).`;
+        searchHint.textContent = `Resultados para "${query}": ${filteredOrders.length} pedido(s), ${filteredProducts.length} producto(s), ${filteredUsers.length} usuario(s), ${filteredRequests.length} solicitud(es) encontrado(s).`;
         searchHint.hidden = false;
       }
     });
