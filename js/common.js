@@ -94,13 +94,11 @@ window.PetLove = (() => {
     id, name, category, price, image: `img/${image}`, description
   }));
 
-  // Imagen que se muestra cuando un producto nuevo no tiene imagen_url
   const IMAGEN_POR_DEFECTO = "data:image/svg+xml;utf8," + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f3efff"/>' +
     '<text x="50%" y="50%" font-size="80" text-anchor="middle" dominant-baseline="middle">🐾</text></svg>'
   );
 
-  // 🔥 FUNCIÓN CLAVE: Sincroniza los IDs de Neon con tu catálogo
   let productosCargadosPromise = null;
   function cargarProductosDesdeBD() {
     if (productosCargadosPromise) return productosCargadosPromise;
@@ -108,15 +106,12 @@ window.PetLove = (() => {
       .then(lista => {
         if (!Array.isArray(lista)) return products;
         lista.forEach(prodBD => {
-          // Busca el producto en tu catálogo por nombre
           const prodLocal = products.find(p => p.name.toLowerCase().trim() === prodBD.nombre.toLowerCase().trim());
           if (prodLocal) {
-            prodLocal.idProductosBD = Number(prodBD.id_productos); // Le asigna el ID real de Neon
+            prodLocal.idProductosBD = Number(prodBD.id_productos);
             prodLocal.stockBD = Number(prodBD.stock);
             prodLocal.price = Number(prodBD.precio) || prodLocal.price;
           } else if (!products.some(p => p.idProductosBD === Number(prodBD.id_productos))) {
-            // Producto nuevo creado desde el panel de administrador: no está en el catálogo
-            // estático, así que lo agregamos para que el cliente también lo vea.
             products.push({
               id: `bd-${Number(prodBD.id_productos)}`,
               name: prodBD.nombre,
@@ -161,13 +156,12 @@ window.PetLove = (() => {
     document.querySelectorAll("[data-count]").forEach(node => node.textContent = count);
   }
   
-  // Pasa lo que el visitante dejó en el carrito (sin sesión) al carrito de su cuenta, justo después de iniciar sesión
   function mergeGuestCart() {
     const guestKey = `${keys.cart}:guest`;
     const guest = read(guestKey, []);
     if (!guest.length) return;
     const user = currentUser();
-    if (user && (user.role === "empleado" || user.role === "administrador")) return; // esas cuentas no compran
+    if (user && (user.role === "empleado" || user.role === "administrador")) return;
     const userKey = cartKey();
     if (userKey === guestKey) return;
     const cart = read(userKey, []);
@@ -181,7 +175,6 @@ window.PetLove = (() => {
   }
 
   function addToCart(id, quantity = 1) {
-    // Los visitantes sin sesión también pueden armar su carrito; para comprar sí deben iniciar sesión (ver carrito.js)
     const user = isLoggedIn() ? currentUser() : null;
     if (user && (user.role === "empleado" || user.role === "administrador")) {
       toast("Este tipo de cuenta no puede realizar compras."); return false;
@@ -211,28 +204,59 @@ window.PetLove = (() => {
     const loggedIn = isLoggedIn();
     const user = currentUser();
     const role = loggedIn ? user.role : null;
-    const isEmployee = role === "empleado";
+    const isStaff = role === "empleado" || role === "administrador"; // Aplica para ambos roles internos
+
+    // Gestionar el botón/enlace del carrito
     document.querySelectorAll('a[href="carrito.html"]').forEach(link => {
-      if (link.classList.contains("cart-link")) { link.style.display = ""; link.style.visibility = isEmployee ? "hidden" : ""; }
-      else link.style.display = isEmployee ? "none" : "";
+      if (isStaff) {
+        // Si es empleado o administrador, transformamos el carrito en un botón de Cerrar sesión
+        link.href = "#";
+        link.className = "cart-link btn outline";
+        link.textContent = "Cerrar sesión";
+        link.onclick = (e) => {
+          e.preventDefault();
+          clearSession();
+          location.href = "login.html";
+        };
+      } else {
+        if (link.classList.contains("cart-link")) { 
+          link.style.display = ""; 
+          link.style.visibility = ""; 
+        } else { 
+          link.style.display = ""; 
+        }
+      }
     });
+
     document.querySelectorAll(".links").forEach(nav => {
       let profileLink = nav.querySelector('a[href="perfil.html"]');
-      nav.querySelectorAll("[data-role-link]").forEach(link => link.remove());
-      if (loggedIn && !profileLink) {
-        profileLink = document.createElement("a");
-        profileLink.href = "perfil.html";
-        profileLink.textContent = "Mi perfil";
-        nav.append(profileLink);
+      nav.querySelectorAll("[data-role-link]").forEach(link => link.link?.remove() || link.remove());
+
+      // Ocultar "Mi perfil" si el usuario ha iniciado sesión y es empleado o administrador
+      if (loggedIn && !isStaff) {
+        if (!profileLink) {
+          profileLink = document.createElement("a");
+          profileLink.href = "perfil.html";
+          profileLink.textContent = "Mi perfil";
+          nav.append(profileLink);
+        }
+        profileLink.style.display = "";
+        profileLink.classList.remove("hidden");
+      } else {
+        if (profileLink) {
+          profileLink.style.display = "none";
+          profileLink.classList.add("hidden");
+        }
       }
-      if (profileLink) profileLink.classList.toggle("hidden", !loggedIn);
-      if (role === "empleado" || role === "administrador") {
+
+      if (isStaff) {
         const link = document.createElement("a");
         link.href = role === "administrador" ? "administrador.html" : "empleado.html";
         link.textContent = role === "administrador" ? "Panel administrador" : "Panel empleado";
         link.dataset.roleLink = "";
         nav.append(link);
       }
+
       nav.querySelectorAll("[data-account-link]").forEach(link => link.remove());
       if (!loggedIn) {
         const login = document.createElement("button");
