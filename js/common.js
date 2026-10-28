@@ -74,7 +74,7 @@ window.PetLove = (() => {
     ["arnes-perro", "Arnés para perro", "Accesorios", 32900, "arnes perro.jpg", "Arnés ergonómico y resistente que brinda máxima comodidad y control seguro durante los paseos diarios de tu perro."],
     ["arnes-gato", "Arnés para gato", "Accesorios", 29900, "arnes gato.jpg", "Arnés ligero y seguro adaptado a la anatomía felina para pasear al aire libre con total tranquilidad."],
     ["collares", "Collar para mascota", "Accesorios", 19900, "collares.jpg", "Set de collares cómodos y duraderos para la identificación y estilo diario de tu mascota."],
-    ["panolleta", "Pañoleta", "Accesorios", 14900, "pañoleta.jpg", "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."],
+    ["panolleta", "Pañoleta", "Accesorios", 14900, "panoleta.jpg", "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."],
     ["guacal", "Guacal de viaje", "Accesorios", 119900, "guacal.png", "Transportadora segura y bien ventilada, esencial para viajes y visitas al veterinario."],
     ["plato-perro", "Plato para perro", "Alimentos", 22900, "plato perro.8yvb00MYJ9K", "Comedero doble resistente para agua y alimento, perfecto para el uso diario de tu perro."],
     ["plato-gato", "Plato elevado para gato", "Alimentos", 18900, "plato gato.jpg", "Kit de dos recipientes elevados (para agua y comida) que favorece una postura cómoda y ergonómica durante las comidas de tu gato."],

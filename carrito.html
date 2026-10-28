@@ -13,7 +13,11 @@
 <body>
   <header>
     <div class="container nav">
-      <a class="brand" href="inicio.html">🐾 PET<span>LOVE</span></a>
+      <div class="logo-titulo">
+        <img src="/img/logo.png" height="60" alt="">
+        <a class="brand" href="inicio.html"> PET<span>LOVE</span></a>
+      </div>
+
       <nav class="links">
         <a href="inicio.html">Inicio</a>
         <a href="catalogo.html">Catálogo</a>
@@ -78,18 +82,89 @@
           <form data-checkout>
             <button class="btn full" style="margin-top:14px">Finalizar compra</button>
           </form>
-          <p class="muted" style="font-size:.8rem;margin-top:10px">
-            Prototipo académico: no procesa pagos reales.
-          </p>
         </aside>
       </div>
+      
+      <div class="checkout-modal hidden"
+          data-checkout-modal
+          aria-hidden="true">
+
+        <div class="checkout-overlay" data-close-checkout></div>
+
+        <section class="checkout-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="checkout-title">
+
+          <button type="button"
+                  class="checkout-close"
+                  data-close-checkout
+                  aria-label="Cerrar ventana">
+            &times;
+          </button>
+
+          <div class="checkout-heading">
+            <span class="checkout-paw"><img src="/img/logo.png" alt=""></span>
+            <p class="checkout-eyebrow">PET <span>LOVE</span></p>
+            <h2 id="checkout-title">¡Revisa tu pedido!</h2>
+            <p>Comprueba que todo esté correcto antes de confirmar tu compra.</p>
+          </div>
+
+          <div class="checkout-products">
+            <h3>Detalle de tu compra</h3>
+            <div data-checkout-items></div>
+          </div>
+
+          <div class="checkout-totals">
+            <div class="sumrow">
+              <span>Subtotal</span>
+              <b data-modal-subtotal>$0</b>
+            </div>
+
+            <div class="sumrow">
+              <span>Envío</span>
+              <b data-modal-shipping>$0</b>
+            </div>
+
+            <div class="sumrow total">
+              <span>Total a pagar</span>
+              <span data-modal-total>$0</span>
+            </div>
+          </div>
+
+          <p class="checkout-note">
+            Tu pedido se registrará cuando pulses
+            «Confirmar pedido».
+          </p>
+
+          <div class="checkout-actions">
+            <button type="button"
+                    class="btn full"
+                    data-confirm-checkout>
+              Confirmar pedido
+            </button>
+
+            <button type="button"
+                    class="btn outline full"
+                    data-close-checkout>
+              Volver al carrito
+            </button>
+          </div>
+
+        </section>
+      </div>
+
+
     </section>
   </main>
 
   <footer class="petlove-footer">
     <div class="container foot">
       <div class="footer-brand">
-        <a class="footer-logo" href="inicio.html">🐾 PET <span>LOVE</span></a>
+        <div class="logo-titulo">
+          <img src="/img/logo.png" height="60" alt="">
+          <a class="footer-logo" href="inicio.html"> PET<span>LOVE</span></a>
+        </div>
         <p>Pequeños detalles, grandes momentos y mucho amor para quienes hacen nuestra vida más feliz.</p>
         <div class="social-links" aria-label="Redes sociales"><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram ↗</a><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook ↗</a><a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok ↗</a></div>
 
@@ -119,7 +194,6 @@
     <div class="footer-bottom">
       <p>© 2026 PET LOVE. Todos los derechos reservados.</p>
     </div>
-    
   </footer>
 
 </body>
