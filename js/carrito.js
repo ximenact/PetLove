@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   const body = document.querySelector("[data-items]");
   if (!body) return;
@@ -17,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const empty = document.querySelector("[data-empty]");
   const layout = document.querySelector("[data-cart-layout]");
   const checkoutForm = document.querySelector("[data-checkout]");
+  const loginRequired = document.querySelector("[data-login-required]");
 
   // Elementos del lightbox
   const modal = document.querySelector("[data-checkout-modal]");
@@ -33,6 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let pedidoEnProceso = false;
+
+  // Se puede armar el carrito sin sesión, pero para comprar hay que iniciarla.
+  // Después de iniciar sesión se regresa al carrito con los mismos productos.
+  function pedirInicioDeSesion() {
+    toast("Inicia sesión para finalizar tu compra. Tus productos seguirán en el carrito.");
+    setTimeout(() => { location.href = "login.html?volver=carrito.html"; }, 1500);
+  }
 
   function leerCarrito() {
     return PetLove.read(cartKey(), [])
@@ -122,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!isLoggedIn()) {
-      toast("Inicia sesión para finalizar tu compra.");
+      pedirInicioDeSesion();
       return;
     }
 
@@ -144,6 +151,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function draw() {
+    // Aviso para visitantes: pueden armar el carrito, pero deben iniciar sesión para comprar
+    loginRequired?.classList.toggle("hidden", isLoggedIn());
+
     const items = leerCarrito();
 
     if (!items.length) {
@@ -272,8 +282,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (pedidoEnProceso) return;
 
     if (!isLoggedIn()) {
-      toast("Inicia sesión para finalizar tu compra.");
       cerrarLightbox();
+      pedirInicioDeSesion();
       return;
     }
 

@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ["entregado", "Entregado"],
     ["cancelado", "Cancelado"]
   ];
-  const collections = { products: [], categories: [], services: [], users: [], orders: [], requests: [] };
+  const collections = { products: [], categories: [], services: [], users: [], orders: [], requests: [], messages: [] };
   const endpoints = { products: "/api/productos", categories: "/api/categorias", services: "/api/servicios" };
   const ownId = Number(user.id_usuarios ?? user.id);
 
@@ -78,7 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderProducts() {
-    $("[data-product-list]").innerHTML = collections.products.map(product =>
+    const productList = $("[data-product-list]");
+    if (!productList) return;
+    productList.innerHTML = collections.products.map(product =>
       `<tr>
         <td>${escape(product.nombre)}</td>
         <td>${escape(product.categoria || "Sin categoría")}</td>
@@ -92,7 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderServices() {
-    $("[data-service-list]").innerHTML = collections.services.map(service =>
+    const serviceList = $("[data-service-list]");
+    if (!serviceList) return;
+    serviceList.innerHTML = collections.services.map(service =>
       `<tr>
         <td>${escape(service.titulo)}</td>
         <td>${escape(service.descripcion)}</td>
@@ -104,7 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderUsers() {
-    $("[data-user-list]").innerHTML = collections.users.map(account => {
+    const userList = $("[data-user-list]");
+    if (!userList) return;
+    userList.innerHTML = collections.users.map(account => {
       const id = Number(account.id_usuarios);
       const isSelf = id === ownId;
       const roleOptions = roles.map(role =>
@@ -115,69 +121,103 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${escape(account.correo)}</td>
         <td><div class="group"><select data-user-role="${id}" aria-label="Rol de ${escape(account.nombre)}"${isSelf ? " disabled" : ""}>${roleOptions}</select></div></td>
         <td>${escape(formatDate(account.fecha_registro))}</td>
-        <td><button class="btn" type="button" data-save-role="${id}"${isSelf ? " disabled title='No puedes cambiar tu propio rol'" : ""}>Guardar rol</button></td>
+        <td><div style="display:flex;gap:8px;flex-wrap:nowrap"><button class="btn" type="button" data-save-role="${id}"${isSelf ? " disabled title='No puedes cambiar tu propio rol'" : ""}>Guardar rol</button>
+        <button class="btn outline" type="button" data-delete-user="${id}"${isSelf ? " disabled title='No puedes borrar tu propia cuenta'" : ""}>Eliminar</button></div></td>
       </tr>`;
     }).join("");
     setCollectionEmpty("users", collections.users.length === 0);
   }
 
   function renderOrders() {
-    const filter = $("[data-order-filter]").value;
+    const filterSelect = $("[data-order-filter]");
+    const filter = filterSelect ? filterSelect.value : "todos";
     const visible = filter === "todos" ? collections.orders : collections.orders.filter(order => order.estado === filter);
     const activeStates = ["pendiente", "en preparacion", "empaquetado", "enviado"];
-    $("[data-orders-total]").textContent = String(collections.orders.length);
-    $("[data-orders-active]").textContent = String(collections.orders.filter(order => activeStates.includes(order.estado)).length);
-    $("[data-orders-delivered]").textContent = String(collections.orders.filter(order => order.estado === "entregado").length);
-    $("[data-orders-cancelled]").textContent = String(collections.orders.filter(order => order.estado === "cancelado").length);
-    $("[data-no-orders]").hidden = collections.orders.length > 0;
-    $("[data-no-filtered-orders]").hidden = collections.orders.length === 0 || visible.length > 0;
-    $("[data-orders-table]").hidden = visible.length === 0;
-    $("[data-admin-orders]").innerHTML = visible.map(order => {
-      const items = (Array.isArray(order.items) ? order.items : []).map(item =>
-        `${escape(item.nombre || "Producto")} × ${Number(item.cantidad) || 0}`
-      ).join(", ");
-      const stateOptions = orderStates.map(([value, label]) =>
-        `<option value="${value}"${order.estado === value ? " selected" : ""}${order.estado === "cancelado" && value !== "cancelado" ? " disabled" : ""}>${label}</option>`
-      ).join("");
-      return `<tr>
-        <td>${Number(order.id_pedidos)}</td>
-        <td>${escape(order.cliente || "Cliente")}<br><small>${escape(order.correo || "")}</small></td>
-        <td>${escape(formatDate(order.fecha))}</td>
-        <td>${PetLove.money(Number(order.total) || 0)}</td>
-        <td>${items || "Sin productos"}</td>
-        <td><div class="group"><select data-order-state="${Number(order.id_pedidos)}" aria-label="Estado del pedido ${Number(order.id_pedidos)}"${order.estado === "cancelado" ? " disabled" : ""}>${stateOptions}</select></div></td>
-        <td><button class="btn" type="button" data-delete-order="${Number(order.id_pedidos)}">Eliminar</button></td>
-      </tr>`;
-    }).join("");
+    
+    const ordersTotal = $("[data-orders-total]");
+    const ordersActive = $("[data-orders-active]");
+    const ordersDelivered = $("[data-orders-delivered]");
+    const ordersCancelled = $("[data-orders-cancelled]");
+    if (ordersTotal) ordersTotal.textContent = String(collections.orders.length);
+    if (ordersActive) ordersActive.textContent = String(collections.orders.filter(order => activeStates.includes(order.estado)).length);
+    if (ordersDelivered) ordersDelivered.textContent = String(collections.orders.filter(order => order.estado === "entregado").length);
+    if (ordersCancelled) ordersCancelled.textContent = String(collections.orders.filter(order => order.estado === "cancelado").length);
+    
+    const noOrders = $("[data-no-orders]");
+    const noFilteredOrders = $("[data-no-filtered-orders]");
+    const ordersTable = $("[data-orders-table]");
+    if (noOrders) noOrders.hidden = collections.orders.length > 0;
+    if (noFilteredOrders) noFilteredOrders.hidden = collections.orders.length === 0 || visible.length > 0;
+    if (ordersTable) ordersTable.hidden = visible.length === 0;
+
+    const adminOrders = $("[data-admin-orders]");
+    if (adminOrders) {
+      adminOrders.innerHTML = visible.map(order => {
+        const items = (Array.isArray(order.items) ? order.items : []).map(item =>
+          `${escape(item.nombre || "Producto")} × ${Number(item.cantidad) || 0}`
+        ).join(", ");
+        const stateOptions = orderStates.map(([value, label]) =>
+          `<option value="${value}"${order.estado === value ? " selected" : ""}${order.estado === "cancelado" && value !== "cancelado" ? " disabled" : ""}>${label}</option>`
+        ).join("");
+        return `<tr>
+          <td>${Number(order.id_pedidos)}</td>
+          <td>${escape(order.cliente || "Cliente")}<br><small>${escape(order.correo || "")}</small></td>
+          <td>${escape(formatDate(order.fecha))}</td>
+          <td>${PetLove.money(Number(order.total) || 0)}</td>
+          <td>${items || "Sin productos"}</td>
+          <td><div class="group"><select data-order-state="${Number(order.id_pedidos)}" aria-label="Estado del pedido ${Number(order.id_pedidos)}"${order.estado === "cancelado" ? " disabled" : ""}>${stateOptions}</select></div></td>
+          <td><button class="btn" type="button" data-delete-order="${Number(order.id_pedidos)}">Eliminar</button></td>
+        </tr>`;
+      }).join("");
+    }
   }
 
   function renderRequests() {
-    const filter = $("[data-request-filter]").value;
+    const filterSelect = $("[data-request-filter]");
+    const filter = filterSelect ? filterSelect.value : "todas";
     const visible = collections.requests.filter(request => filter === "todas" || request.estado === filter);
     const pending = collections.requests.filter(request => request.estado === "pendiente").length;
-    $("[data-requests-total]").textContent = String(collections.requests.length);
-    $("[data-requests-pending]").textContent = String(pending);
-    $("[data-requests-answered]").textContent = String(collections.requests.length - pending);
-    $("[data-no-requests]").hidden = collections.requests.length > 0;
-    $("[data-no-filtered-requests]").hidden = collections.requests.length === 0 || visible.length > 0;
-    $("[data-admin-requests]").innerHTML = visible.map(request => {
-      const id = Number(request.id_solicitud_servicios);
-      const answered = request.estado === "contestado";
-      const response = answered
-        ? `<div class="request-response"><strong>Respuesta enviada</strong><p>${escape(request.respuesta || "")}</p></div>`
-        : `<form class="request-response" data-answer-request="${id}">
-             <div class="group"><label for="answer-${id}">Respuesta</label><textarea id="answer-${id}" name="respuesta" rows="3" minlength="2" maxlength="2000" required></textarea></div>
-             <button class="btn" type="submit">Enviar respuesta</button>
-           </form>`;
-      return `<article class="status-item">
-        <div class="status-item-top"><span class="status-id">Solicitud ${id}</span><span class="status-pill${answered ? " status-pill-answered" : ""}">${answered ? "Contestada" : "Pendiente"}</span></div>
-        <h2>${escape(request.servicio || "Servicio")}</h2>
-        <p><strong>Cliente:</strong> ${escape(request.cliente || "Cliente")} · ${escape(request.correo || "")}</p>
-        <p class="status-description">${escape(request.descripcion || "")}</p>
-        <div class="status-meta"><span>Recibida: ${escape(formatDate(request.fecha))}</span></div>
-        ${response}
-      </article>`;
-    }).join("");
+    
+    const requestsTotal = $("[data-requests-total]");
+    const requestsPending = $("[data-requests-pending]");
+    const requestsAnswered = $("[data-requests-answered]");
+    if (requestsTotal) requestsTotal.textContent = String(collections.requests.length);
+    if (requestsPending) requestsPending.textContent = String(pending);
+    if (requestsAnswered) requestsAnswered.textContent = String(collections.requests.length - pending);
+    
+    const noRequests = $("[data-no-requests]");
+    const noFilteredRequests = $("[data-no-filtered-requests]");
+    if (noRequests) noRequests.hidden = collections.requests.length > 0;
+    if (noFilteredRequests) noFilteredRequests.hidden = collections.requests.length === 0 || visible.length > 0;
+
+    const adminRequests = $("[data-admin-requests]");
+    if (adminRequests) {
+      adminRequests.innerHTML = visible.map(request => {
+        const id = Number(request.id_solicitud_servicios);
+        const answered = request.estado === "contestado";
+        const thread = collections.messages
+          .filter(message => Number(message.id_solicitud_servicios) === id)
+          .map(message => `<div class="request-response"><strong>${message.autor === "cliente" ? "Nueva duda del cliente" : "Respuesta del equipo"}</strong><p>${escape(message.mensaje)}</p><small class="muted">${escape(formatDate(message.fecha))}</small></div>`)
+          .join("");
+        const previous = request.respuesta
+          ? `<div class="request-response"><strong>${answered ? "Respuesta enviada" : "Respuesta anterior"}</strong><p>${escape(request.respuesta)}</p></div>`
+          : (answered ? `<div class="request-response"><strong>Respuesta enviada</strong><p>Marcada como contestada.</p></div>` : "");
+        const isFollowUp = !answered && Boolean(request.respuesta);
+        const answerForm = answered ? "" : `<form class="request-response" data-answer-request="${id}"${isFollowUp ? " data-followup" : ""}>
+               <div class="group"><label for="answer-${id}">${isFollowUp ? "Respuesta a la nueva duda" : "Respuesta"}</label><textarea id="answer-${id}" name="respuesta" rows="3" minlength="2" maxlength="2000" required></textarea></div>
+               <button class="btn" type="submit">Enviar respuesta</button>
+             </form>`;
+        const response = previous + thread + answerForm;
+        return `<article class="status-item">
+          <div class="status-item-top"><span class="status-id">Solicitud ${id}</span><span class="status-pill${answered ? " status-pill-answered" : ""}">${answered ? "Contestada" : "Pendiente"}</span></div>
+          <h2>${escape(request.servicio || "Servicio")}</h2>
+          <p><strong>Cliente:</strong> ${escape(request.cliente || "Cliente")} · ${escape(request.correo || "")}</p>
+          <p class="status-description">${escape(request.descripcion || "")}</p>
+          <div class="status-meta"><span>Recibida: ${escape(formatDate(request.fecha))}</span></div>
+          ${response}
+        </article>`;
+      }).join("");
+    }
   }
 
   function renderAll() {
@@ -196,7 +236,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ["services", () => api(endpoints.services)],
       ["users", () => api("/api/usuarios")],
       ["orders", () => api("/api/pedidos")],
-      ["requests", () => api("/api/solicitudes")]
+      ["requests", () => api("/api/solicitudes")],
+      ["messages", () => api("/api/mensajes-solicitudes").catch(() => [])]
     ];
     const results = await Promise.allSettled(tasks.map(([, load]) => load()));
     const errors = [];
@@ -245,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Nombre de cada pestaña/panel en administrador.html (data-tab y data-panel)
   const panelOf = { products: "productos", categories: "categorias", services: "servicios" };
 
   function resetEntityForm(form) {
@@ -351,6 +391,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const deleteUserId = button.getAttribute("data-delete-user");
+    if (deleteUserId) {
+      const account = collections.users.find(entry => String(entry.id_usuarios) === deleteUserId);
+      if (!account) { notify("No se encontró el usuario que quieres eliminar.", true); return; }
+      if (Number(deleteUserId) === ownId) { notify("No puedes borrar tu propia cuenta.", true); return; }
+      if (!confirm(`¿Eliminar la cuenta de ${account.nombre} (${account.correo}) de forma definitiva? Esta acción no se puede deshacer.`)) return;
+      button.disabled = true;
+      try {
+        await api(`/api/usuarios/${encodeURIComponent(deleteUserId)}`, { method: "DELETE" });
+        await refreshAfterChange(`La cuenta de ${account.nombre} se eliminó correctamente.`);
+      } catch (error) {
+        notify(error.message, true);
+      } finally {
+        button.disabled = false;
+      }
+      return;
+    }
+
     const userId = button.getAttribute("data-save-role");
     if (userId) {
       const select = $(`[data-user-role="${CSS.escape(userId)}"]`);
@@ -371,61 +429,180 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  $("[data-order-filter]").addEventListener("change", renderOrders);
-  $("[data-request-filter]").addEventListener("change", renderRequests);
+  const orderFilter = $("[data-order-filter]");
+  if (orderFilter) orderFilter.addEventListener("change", renderOrders);
 
-  $("[data-admin-orders]").addEventListener("change", async event => {
-    const select = event.target.closest("[data-order-state]");
-    if (!select) return;
-    const id = select.dataset.orderState;
-    const order = collections.orders.find(entry => String(entry.id_pedidos) === id);
-    if (!order) { notify("No se encontró el pedido.", true); renderOrders(); return; }
-    if (order.estado === "cancelado") { notify("Un pedido cancelado no se puede reactivar.", true); renderOrders(); return; }
-    if (select.value === "cancelado" && !confirm(`¿Cancelar el pedido ${id}? Se devolverán sus productos al inventario.`)) {
-      renderOrders();
-      return;
-    }
-    select.disabled = true;
-    try {
-      await api(`/api/pedidos/${encodeURIComponent(id)}/estado`, {
-        method: "PUT",
-        body: JSON.stringify({ estado: select.value })
+  const requestFilter = $("[data-request-filter]");
+  if (requestFilter) requestFilter.addEventListener("change", renderRequests);
+
+  const adminOrdersContainer = $("[data-admin-orders]");
+  if (adminOrdersContainer) {
+    adminOrdersContainer.addEventListener("change", async event => {
+      const select = event.target.closest("[data-order-state]");
+      if (!select) return;
+      const id = select.dataset.orderState;
+      const order = collections.orders.find(entry => String(entry.id_pedidos) === id);
+      if (!order) { notify("No se encontró el pedido.", true); renderOrders(); return; }
+      if (order.estado === "cancelado") { notify("Un pedido cancelado no se puede reactivar.", true); renderOrders(); return; }
+      if (select.value === "cancelado" && !confirm(`¿Cancelar el pedido ${id}? Se devolverán sus productos al inventario.`)) {
+        renderOrders();
+        return;
+      }
+      select.disabled = true;
+      try {
+        await api(`/api/pedidos/${encodeURIComponent(id)}/estado`, {
+          method: "PUT",
+          body: JSON.stringify({ estado: select.value })
+        });
+        await refreshAfterChange(`El pedido ${id} se actualizó correctamente.`);
+      } catch (error) {
+        notify(error.message, true);
+        renderOrders();
+      }
+    });
+  }
+
+  const adminRequestsContainer = $("[data-admin-requests]");
+  if (adminRequestsContainer) {
+    adminRequestsContainer.addEventListener("submit", async event => {
+      const form = event.target.closest("form[data-answer-request]");
+      if (!form) return;
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const answer = form.elements.respuesta.value.trim();
+      if (answer.length < 2 || answer.length > 2000) {
+        notify("La respuesta debe tener entre 2 y 2000 caracteres.", true);
+        return;
+      }
+      const button = form.querySelector("button[type='submit']");
+      button.disabled = true;
+      try {
+        if (form.hasAttribute("data-followup")) {
+          await api(`/api/solicitudes/${encodeURIComponent(form.dataset.answerRequest)}/mensajes`, {
+            method: "POST",
+            body: JSON.stringify({ mensaje: answer })
+          });
+        } else {
+          await api(`/api/solicitudes/${encodeURIComponent(form.dataset.answerRequest)}/respuesta`, {
+            method: "PUT",
+            body: JSON.stringify({ respuesta: answer })
+          });
+        }
+        await refreshAfterChange("La respuesta se envió correctamente.");
+      } catch (error) {
+        notify(error.message, true);
+        button.disabled = false;
+      }
+    });
+  }
+
+  const logoutBtn = $("[data-logout]");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      PetLove.clearSession();
+      location.href = "login.html";
+    });
+  }
+
+  // --- Funcionalidad del Buscador Global ---
+  const globalSearchInput = $("#admin-global-search");
+  const searchHint = $("[data-search-hint]");
+
+  if (globalSearchInput) {
+    globalSearchInput.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+
+      if (!query) {
+        if (searchHint) {
+          searchHint.textContent = "";
+          searchHint.hidden = true;
+        }
+        renderOrders();
+        renderProducts();
+        renderUsers();
+        return;
+      }
+
+      const filteredOrders = collections.orders.filter(order => {
+        const idStr = String(order.id_pedidos);
+        const clientStr = (order.cliente || "").toLowerCase();
+        const emailStr = (order.correo || "").toLowerCase();
+        return idStr.includes(query) || clientStr.includes(query) || emailStr.includes(query);
       });
-      await refreshAfterChange(`El pedido ${id} se actualizó correctamente.`);
-    } catch (error) {
-      notify(error.message, true);
-      renderOrders();
-    }
-  });
 
-  $("[data-admin-requests]").addEventListener("submit", async event => {
-    const form = event.target.closest("form[data-answer-request]");
-    if (!form) return;
-    event.preventDefault();
-    if (!form.reportValidity()) return;
-    const answer = form.elements.respuesta.value.trim();
-    if (answer.length < 2 || answer.length > 2000) {
-      notify("La respuesta debe tener entre 2 y 2000 caracteres.", true);
-      return;
-    }
-    const button = form.querySelector("button[type='submit']");
-    button.disabled = true;
-    try {
-      await api(`/api/solicitudes/${encodeURIComponent(form.dataset.answerRequest)}/respuesta`, {
-        method: "PUT",
-        body: JSON.stringify({ respuesta: answer })
+      const filteredProducts = collections.products.filter(product => {
+        const nameStr = (product.nombre || "").toLowerCase();
+        const catStr = (product.categoria || "").toLowerCase();
+        const descStr = (product.descripcion || "").toLowerCase();
+        return nameStr.includes(query) || catStr.includes(query) || descStr.includes(query);
       });
-      await refreshAfterChange("La respuesta se envió correctamente.");
-    } catch (error) {
-      notify(error.message, true);
-      button.disabled = false;
-    }
-  });
 
-  $("[data-logout]").addEventListener("click", () => {
-    PetLove.clearSession();
-    location.href = "login.html";
-  });
+      const filteredUsers = collections.users.filter(userAcc => {
+        const nameStr = (userAcc.nombre || "").toLowerCase();
+        const emailStr = (userAcc.correo || "").toLowerCase();
+        return nameStr.includes(query) || emailStr.includes(query);
+      });
+
+      const ordersTableBody = $("[data-admin-orders]");
+      if (ordersTableBody) {
+        ordersTableBody.innerHTML = filteredOrders.map(order => {
+          const items = (Array.isArray(order.items) ? order.items : []).map(item =>
+            `${escape(item.nombre || "Producto")} × ${Number(item.cantidad) || 0}`
+          ).join(", ");
+          const stateOptions = orderStates.map(([value, label]) =>
+            `<option value="${value}"${order.estado === value ? " selected" : ""}${order.estado === "cancelado" && value !== "cancelado" ? " disabled" : ""}>${label}</option>`
+          ).join("");
+          return `<tr>
+            <td>${Number(order.id_pedidos)}</td>
+            <td>${escape(order.cliente || "Cliente")}<br><small>${escape(order.correo || "")}</small></td>
+            <td>${escape(formatDate(order.fecha))}</td>
+            <td>${PetLove.money(Number(order.total) || 0)}</td>
+            <td>${items || "Sin productos"}</td>
+            <td><div class="group"><select data-order-state="${Number(order.id_pedidos)}" aria-label="Estado del pedido ${Number(order.id_pedidos)}"${order.estado === "cancelado" ? " disabled" : ""}>${stateOptions}</select></div></td>
+            <td><button class="btn" type="button" data-delete-order="${Number(order.id_pedidos)}">Eliminar</button></td>
+          </tr>`;
+        }).join("");
+      }
+
+      const productListBody = $("[data-product-list]");
+      if (productListBody) {
+        productListBody.innerHTML = filteredProducts.map(product =>
+          `<tr>
+            <td>${escape(product.nombre)}</td>
+            <td>${escape(product.categoria || "Sin categoría")}</td>
+            <td>${PetLove.money(Number(product.precio) || 0)}</td>
+            <td>${Number(product.stock) || 0}</td>
+            <td><button class="btn outline" type="button" data-edit-product="${Number(product.id_productos)}">Editar</button>
+            <button class="btn" type="button" data-delete-product="${Number(product.id_productos)}">Eliminar</button></td>
+          </tr>`
+        ).join("");
+      }
+
+      const userListBody = $("[data-user-list]");
+      if (userListBody) {
+        userListBody.innerHTML = filteredUsers.map(account => {
+          const id = Number(account.id_usuarios);
+          const isSelf = id === ownId;
+          const roleOptions = roles.map(role =>
+            `<option value="${role}"${account.rol === role ? " selected" : ""}>${role[0].toUpperCase()}${role.slice(1)}</option>`
+          ).join("");
+          return `<tr>
+            <td>${escape(account.nombre)}</td>
+            <td>${escape(account.correo)}</td>
+            <td><div class="group"><select data-user-role="${id}" aria-label="Rol de ${escape(account.nombre)}"${isSelf ? " disabled" : ""}>${roleOptions}</select></div></td>
+            <td>${escape(formatDate(account.fecha_registro))}</td>
+            <td><div style="display:flex;gap:8px;flex-wrap:nowrap"><button class="btn" type="button" data-save-role="${id}"${isSelf ? " disabled title='No puedes cambiar tu propio rol'" : ""}>Guardar rol</button>
+            <button class="btn outline" type="button" data-delete-user="${id}"${isSelf ? " disabled title='No puedes borrar tu propia cuenta'" : ""}>Eliminar</button></div></td>
+          </tr>`;
+        }).join("");
+      }
+
+      if (searchHint) {
+        searchHint.textContent = `Resultados para "${query}": ${filteredOrders.length} pedido(s), ${filteredProducts.length} producto(s), ${filteredUsers.length} usuario(s) encontrado(s).`;
+        searchHint.hidden = false;
+      }
+    });
+  }
 
   tab("pedidos");
   loadData().then(error => { if (error) notify(error, true); });

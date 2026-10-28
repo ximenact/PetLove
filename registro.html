@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -71,16 +71,33 @@
         <div class="form-row">
           <div class="group">
             <label for="regpass">Contraseña *</label>
-            <input id="regpass" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="Mínimo 6 caracteres">
+            <input id="regpass" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="Mínimo 8 caracteres">
           </div>
           <div class="group">
             <label for="confirm">Confirmar contraseña *</label>
-            <input id="confirm" name="confirm" type="password" autocomplete="new-password" required minlength="6" placeholder="Repite la contraseña">
+            <input id="confirm" name="confirm" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="Repite la contraseña">
           </div>
         </div>
 
+        <div data-password-help aria-live="polite" style="margin:0 0 14px;font-size:.85rem">
+          <p class="muted" style="margin:0 0 6px">Tu contraseña debe cumplir:</p>
+          <ul style="list-style:none;padding:0;margin:0;display:grid;gap:3px">
+            <li data-rule="largo"><span data-icon>○</span> Entre 8 y 72 caracteres</li>
+            <li data-rule="mayuscula"><span data-icon>○</span> Una letra mayúscula (A-Z)</li>
+            <li data-rule="minuscula"><span data-icon>○</span> Una letra minúscula (a-z)</li>
+            <li data-rule="numero"><span data-icon>○</span> Un número (0-9)</li>
+            <li data-rule="especial"><span data-icon>○</span> Un carácter especial (por ejemplo: ! @ # $ % &amp; *)</li>
+            <li data-rule="espacios"><span data-icon>○</span> Sin espacios</li>
+            <li data-rule="personal"><span data-icon>○</span> Sin tu nombre ni la parte de tu correo antes de la @</li>
+            <li data-rule="comun"><span data-icon>○</span> Que no sea una contraseña común (como 12345678 o password)</li>
+            <li data-rule="repetidos"><span data-icon>○</span> Sin el mismo carácter repetido 3 veces seguidas (como aaa o 111)</li>
+          </ul>
+          <p data-password-strength style="margin:8px 0 0;font-weight:600"></p>
+        </div>
+
         <label class="check-label">
-          <input id="terms" name="terms" type="checkbox" required> Acepto los términos de uso y la política de privacidad de la demostración.
+          <input id="terms" name="terms" type="checkbox" required>
+          <span>Acepto los <a href="terminos.html" target="_blank" rel="noopener" style="color:#6d4fd1;font-weight:600;text-decoration:underline">términos de uso</a> y la <a href="terminos.html#privacidad" target="_blank" rel="noopener" style="color:#6d4fd1;font-weight:600;text-decoration:underline">política de privacidad</a> de la demostración.</span>
         </label>
 
         <button class="btn full" type="submit">Crear mi cuenta</button>

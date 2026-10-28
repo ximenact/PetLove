@@ -121,31 +121,85 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  host.innerHTML = '<div class="status-empty"><h2>Cargando…</h2></div>';
-  try {
-    const mine = await PetLove.api("/api/solicitudes/mias");
-    if (!Array.isArray(mine) || !mine.length) {
-      host.innerHTML = '<div class="status-empty"><h2>Aún no tienes solicitudes</h2><p>Cuando envíes una solicitud, podrás consultar aquí su estado y la respuesta del equipo.</p></div>';
-      return;
-    }
-    host.innerHTML = mine.map(item => {
-      const answered = String(item.estado || "").toLowerCase() === "contestado";
-      const replyText = answered
-        ? (item.respuesta ? escape(item.respuesta) : "El equipo marcó esta solicitud como contestada.")
-        : "Aún estamos revisando tu solicitud. Te mostraremos aquí la respuesta cuando el equipo conteste.";
-      const fecha = item.fecha ? new Date(item.fecha).toLocaleString("es-CO") : "";
-      return `<article class="status-item">
+  async function cargarMisSolicitudes() {
+    host.innerHTML = '<div class="status-empty"><h2>Cargando…</h2></div>';
+    try {
+      const mine = await PetLove.api("/api/solicitudes/mias");
+      if (!Array.isArray(mine) || !mine.length) {
+        host.innerHTML = '<div class="status-empty"><h2>Aún no tienes solicitudes</h2><p>Cuando envíes una solicitud, podrás consultar aquí su estado y la respuesta del equipo.</p></div>';
+        return;
+      }
+      // Mensajes de seguimiento: nuevas consultas del cliente y respuestas del equipo
+      let mensajes = [];
+      try {
+        const lista = await PetLove.api("/api/mensajes-solicitudes");
+        if (Array.isArray(lista)) mensajes = lista;
+      } catch { /* si todavía no existe el seguimiento, se muestra solo la respuesta inicial */ }
+
+      host.innerHTML = mine.map(item => {
+        const id = Number(item.id_solicitud_servicios);
+        const answered = String(item.estado || "").toLowerCase() === "contestado";
+        const replyText = item.respuesta
+          ? escape(item.respuesta)
+          : (answered
+            ? "El equipo marcó esta solicitud como contestada."
+            : "Aún estamos revisando tu solicitud. Te mostraremos aquí la respuesta cuando el equipo conteste.");
+        const fecha = item.fecha ? new Date(item.fecha).toLocaleString("es-CO") : "";
+        const hilo = mensajes
+          .filter(m => Number(m.id_solicitud_servicios) === id)
+          .map(m => `<div class="request-response"><strong>${m.autor === "cliente" ? "Tu consulta" : "Respuesta del equipo"}</strong><p>${escape(m.mensaje)}</p><small class="muted">${escape(new Date(m.fecha).toLocaleString("es-CO"))}</small></div>`)
+          .join("");
+        const seguimiento = answered
+          ? `<form class="request-response" data-followup="${id}" novalidate>
+              <div class="group">
+                <label for="followup-${id}">¿Te quedaron dudas? Pide más respuestas</label>
+                <textarea id="followup-${id}" rows="3" maxlength="2000" placeholder="Escribe tu nueva pregunta para el equipo..."></textarea>
+              </div>
+              <div class="formmsg hidden" data-followup-msg role="status"></div>
+              <button class="btn" type="submit" style="margin-top:10px">Pedir más respuestas</button>
+            </form>`
+          : (item.respuesta ? `<p class="muted" style="margin-top:12px">Tu nueva consulta fue enviada. El equipo te responderá pronto.</p>` : "");
+        return `<article class="status-item">
         <div class="status-item-top">
-          <span class="status-id">Solicitud ${Number(item.id_solicitud_servicios)}</span>
+          <span class="status-id">Solicitud ${id}</span>
           <span class="status-pill ${answered ? "status-pill-answered" : ""}">${answered ? "Contestado" : "Esperando respuesta"}</span>
         </div>
         <h2>${escape(item.servicio || "Solicitud de servicio")}</h2>
         <p class="status-description">${escape(item.descripcion || "")}</p>
         <div class="status-meta"><span>Enviada: ${escape(fecha)}</span></div>
         <div class="request-response"><strong>Respuesta del equipo</strong><p>${replyText}</p></div>
+        ${hilo}
+        ${seguimiento}
       </article>`;
-    }).join("");
-  } catch (error) {
-    host.innerHTML = `<div class="status-empty"><h2>No se pudieron cargar tus solicitudes</h2><p>${escape(error.message)}</p></div>`;
+      }).join("");
+    } catch (error) {
+      host.innerHTML = `<div class="status-empty"><h2>No se pudieron cargar tus solicitudes</h2><p>${escape(error.message)}</p></div>`;
+    }
   }
+
+  // Enviar una nueva consulta sobre una solicitud ya contestada
+  host.addEventListener("submit", async event => {
+    const form = event.target.closest("form[data-followup]");
+    if (!form) return;
+    event.preventDefault();
+    const input = form.querySelector("textarea");
+    const msg = form.querySelector("[data-followup-msg]");
+    const text = input.value.trim();
+    if (text.length < 5) { showMessage(msg, "Escribe al menos 5 caracteres.", true); return; }
+    if (text.length > 2000) { showMessage(msg, "El mensaje no puede superar 2000 caracteres.", true); return; }
+    const btn = form.querySelector("button[type='submit']");
+    btn.disabled = true;
+    try {
+      await PetLove.api(`/api/solicitudes/${encodeURIComponent(form.dataset.followup)}/mensajes`, {
+        method: "POST",
+        body: JSON.stringify({ mensaje: text })
+      });
+      await cargarMisSolicitudes();
+    } catch (error) {
+      showMessage(msg, error.message === "Ruta no encontrada" ? "El servidor todavía no tiene activada esta opción." : error.message, true);
+      btn.disabled = false;
+    }
+  });
+
+  await cargarMisSolicitudes();
 });

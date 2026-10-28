@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         role: rol // 👈 common.js y empleado.js leen "user.role", por eso se guarda con este nombre también
       });
       
+      PetLove.mergeGuestCart(); // los productos que tenía como visitante pasan a su carrito
       PetLove.showMessage(message, `Bienvenido, ${data.usuario.nombre}.`);
       PetLove.updateAccountMenu();
 
@@ -43,7 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (rol === "empleado") {
         location.href = "empleado.html";
       } else {
-        location.href = "inicio.html";
+        // Si venía del carrito (login.html?volver=carrito.html), regresa allí para terminar la compra
+        const volver = new URLSearchParams(location.search).get("volver") || "";
+        location.href = /^[a-z0-9_-]+\.html$/i.test(volver) ? volver : "inicio.html";
       }
       
     } catch (error) {

@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ---------- Estado local ----------
   let pedidos = [];
   let solicitudes = [];
+  let mensajes = []; // seguimiento de solicitudes (nuevas dudas y respuestas)
 
   // ---------- Pedidos ----------
   const orderFilter = $("[data-order-filter]");
@@ -147,17 +148,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       const contestada = s.estado === "contestado";
       const id = Number(s.id_solicitud_servicios);
       const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-CO") : "";
-      const respuesta = contestada
-        ? `<div class="request-response"><strong>Respuesta enviada</strong><p>${s.respuesta ? escape(s.respuesta) : "Marcada como contestada."}</p></div>`
-        : `<form class="request-response" data-respond="${id}" novalidate>
+      const hilo = mensajes
+        .filter(m => Number(m.id_solicitud_servicios) === id)
+        .map(m => `<div class="request-response"><strong>${m.autor === "cliente" ? "Nueva duda del cliente" : "Respuesta del equipo"}</strong><p>${escape(m.mensaje)}</p><small class="muted">${escape(new Date(m.fecha).toLocaleString("es-CO"))}</small></div>`)
+        .join("");
+      const previa = s.respuesta
+        ? `<div class="request-response"><strong>${contestada ? "Respuesta enviada" : "Respuesta anterior"}</strong><p>${escape(s.respuesta)}</p></div>`
+        : (contestada ? `<div class="request-response"><strong>Respuesta enviada</strong><p>Marcada como contestada.</p></div>` : "");
+      const esSeguimiento = !contestada && Boolean(s.respuesta);
+      const formulario = contestada ? "" : `<form class="request-response" data-respond="${id}"${esSeguimiento ? " data-followup" : ""} novalidate>
              <div class="group">
-               <label for="response-${id}">Tu respuesta</label>
+               <label for="response-${id}">${esSeguimiento ? "Tu respuesta a la nueva duda" : "Tu respuesta"}</label>
                <textarea id="response-${id}" data-response-input rows="3" maxlength="${MAX_RESP}" placeholder="Escribe la respuesta para el cliente..."></textarea>
              </div>
              <small class="muted"><span data-counter>0</span>/${MAX_RESP} caracteres (mínimo ${MIN_RESP})</small>
              <div class="formmsg hidden" data-response-msg role="status"></div>
              <button class="btn" type="submit" style="margin-top:10px">Enviar respuesta</button>
            </form>`;
+      const respuesta = previa + hilo + formulario;
       return `<article class="status-item">
         <div class="status-item-top">
           <span class="status-id">Solicitud ${id}</span>
@@ -195,10 +203,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btn = form.querySelector("button[type='submit']");
     btn && (btn.disabled = true);
     try {
-      await PetLove.api(`/api/solicitudes/${id}/respuesta`, {
-        method: "PUT",
-        body: JSON.stringify({ respuesta: text })
-      });
+      if (form.hasAttribute("data-followup")) {
+        // Responder una nueva duda del cliente (seguimiento)
+        await PetLove.api(`/api/solicitudes/${id}/mensajes`, {
+          method: "POST",
+          body: JSON.stringify({ mensaje: text })
+        });
+      } else {
+        await PetLove.api(`/api/solicitudes/${id}/respuesta`, {
+          method: "PUT",
+          body: JSON.stringify({ respuesta: text })
+        });
+      }
       toast("Respuesta enviada al cliente.");
       await recargarSolicitudes();
     } catch (error) {
@@ -212,6 +228,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const lista = await PetLove.api("/api/solicitudes");
       solicitudes = Array.isArray(lista) ? lista : [];
+      const seguimiento = await PetLove.api("/api/mensajes-solicitudes").catch(() => []);
+      mensajes = Array.isArray(seguimiento) ? seguimiento : [];
       drawServices();
     } catch (error) {
       toast("No se pudieron cargar las solicitudes: " + error.message);

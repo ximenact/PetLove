@@ -341,50 +341,50 @@ app.delete('/api/productos/:id', exigirRol('administrador'), async (req, res) =>
 const correoValido = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
 
 // Registrarse: siempre crea una cuenta con rol 'cliente'
+// Reglas de contraseña para cuentas NUEVAS (son las mismas que muestra el formulario de registro).
+// Devuelve el mensaje de error, o null si la contraseña es segura.
+const CLAVES_COMUNES = ['password', 'contrasena', 'qwerty', '123456', 'abc123', 'admin', 'petlove', 'iloveyou', 'letmein', 'welcome'];
+const sinTildes = (texto) => String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+function errorDeClave(clave, nombre, correo) {
+  if (clave.length < 8 || Buffer.byteLength(clave) > 72) return 'La contraseña debe tener entre 8 y 72 caracteres';
+  if (/\s/.test(clave)) return 'La contraseña no puede tener espacios';
+  if (!/\p{Ll}/u.test(clave)) return 'La contraseña debe incluir una letra minúscula';
+  if (!/\p{Lu}/u.test(clave)) return 'La contraseña debe incluir una letra mayúscula';
+  if (!/[0-9]/.test(clave)) return 'La contraseña debe incluir un número';
+  if (!/[^\p{L}\p{N}\s]/u.test(clave)) return 'La contraseña debe incluir un carácter especial (por ejemplo ! @ # $ %)';
+  const minus = sinTildes(clave);
+  const palabrasPersonales = [sinTildes(correo).split('@')[0], ...sinTildes(nombre).split(/\s+/)].filter((p) => p.length >= 3);
+  if (palabrasPersonales.some((p) => minus.includes(p))) return 'La contraseña no debe contener tu nombre ni la parte de tu correo antes de la @';
+  if (CLAVES_COMUNES.some((c) => minus.includes(c))) return 'La contraseña es demasiado común';
+  if (/(.)\1\1/u.test(clave)) return 'La contraseña no debe repetir el mismo carácter 3 veces seguidas';
+  return null;
+}
+
 app.post('/api/auth/registro', async (req, res) => {
   const body = req.body || {};
-  const nombre = String(body.nombre ?? body.name ?? '').trim();
-  const apellido = String(body.apellido ?? body.lastname ?? '').trim();
-  const correo = String(body.correo ?? body.email ?? '').trim().toLowerCase();
+  const nombre = String(body.nombre || '').trim();
+  const correo = String(body.correo || '').trim().toLowerCase();
   const clave = String(body.contraseña ?? body.password ?? '');
-  const telefono = String(body.telefono ?? body.phone ?? '').trim();
-  const ciudad = String(body.ciudad ?? body.city ?? '').trim();
-  const direccion = String(body.direccion ?? body.address ?? '').trim();
-  const nombre_mascota = String(body.nombre_mascota ?? body.pet ?? '').trim();
 
   if (nombre.length < 2 || nombre.length > 100) {
     return res.status(400).json({ error: 'El nombre debe tener entre 2 y 100 caracteres' });
   }
-  if (apellido.length < 2 || apellido.length > 100) {
-    return res.status(400).json({ error: 'El apellido debe tener entre 2 y 100 caracteres' });
-  }
   if (!correoValido(correo) || correo.length > 150) {
     return res.status(400).json({ error: 'El correo no es válido' });
   }
-  if (clave.length < 6 || clave.length > 72) {
-    return res.status(400).json({ error: 'La contraseña debe tener entre 6 y 72 caracteres' });
-  }
-  if (telefono.length < 7 || telefono.length > 20) {
-    return res.status(400).json({ error: 'El teléfono debe tener entre 7 y 20 caracteres' });
-  }
-  if (ciudad.length < 2 || ciudad.length > 100) {
-    return res.status(400).json({ error: 'La ciudad es obligatoria' });
-  }
-  if (direccion.length < 5 || direccion.length > 200) {
-    return res.status(400).json({ error: 'La dirección debe tener entre 5 y 200 caracteres' });
-  }
-  if (nombre_mascota.length > 100) {
-    return res.status(400).json({ error: 'El nombre de la mascota es muy largo' });
+  const errorClave = errorDeClave(clave, nombre, correo);
+  if (errorClave) {
+    return res.status(400).json({ error: errorClave });
   }
 
   try {
     const claveProtegida = await bcrypt.hash(clave, 10);
     // OJO: no se recibe el rol desde el formulario; la base pone 'cliente' sola
     const result = await pool.query(
-      `INSERT INTO usuarios (nombre, apellido, correo, "contraseña", telefono, ciudad, direccion, nombre_mascota)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id_usuarios, nombre, apellido, correo, rol, fecha_registro`,
-      [nombre, apellido, correo, claveProtegida, telefono, ciudad, direccion, nombre_mascota || null]
+      `INSERT INTO usuarios (nombre, correo, "contraseña")
+       VALUES ($1, $2, $3)
+       RETURNING id_usuarios, nombre, correo, rol, fecha_registro`,
+      [nombre, correo, claveProtegida]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -664,6 +664,84 @@ app.put('/api/solicitudes/:id/respuesta', exigirRol('empleado', 'administrador')
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al contestar la solicitud' });
+  }
+});
+
+// ----- Seguimiento de una solicitud: nuevas dudas del cliente y respuestas del equipo -----
+// (usa la tabla solicitud_mensajes)
+
+// Ver los mensajes de seguimiento. El cliente solo ve los de SUS solicitudes; empleado y administrador ven todos.
+app.get('/api/mensajes-solicitudes', exigirLogin, async (req, res) => {
+  const esEquipo = req.usuario.rol === 'empleado' || req.usuario.rol === 'administrador';
+  try {
+    const result = await pool.query(
+      `SELECT m.id_mensajes, m.id_solicitud_servicios, m.autor, m.mensaje, m.fecha
+       FROM solicitud_mensajes m
+       JOIN solicitud_servicios s ON s.id_solicitud_servicios = m.id_solicitud_servicios
+       ${esEquipo ? '' : 'WHERE s.id_usuarios = $1'}
+       ORDER BY m.fecha ASC, m.id_mensajes ASC`,
+      esEquipo ? [] : [req.usuario.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al consultar los mensajes de seguimiento' });
+  }
+});
+
+// Agregar un mensaje de seguimiento. Body: { "mensaje": "..." }
+// - Cliente (dueño de la solicitud): pide más respuestas. Solo si la solicitud ya fue contestada; vuelve a "pendiente".
+// - Empleado o administrador: responde la nueva duda. Solo si la solicitud está pendiente y ya tenía una respuesta; pasa a "contestado".
+app.post('/api/solicitudes/:id/mensajes', exigirLogin, async (req, res) => {
+  if (!idValido(req.params.id)) return res.status(400).json({ error: 'Id no válido' });
+  const mensaje = String(req.body?.mensaje || '').trim();
+  if (mensaje.length < 5 || mensaje.length > 2000) {
+    return res.status(400).json({ error: 'El mensaje debe tener entre 5 y 2000 caracteres' });
+  }
+  const esCliente = req.usuario.rol === 'cliente';
+
+  const conexion = await pool.connect();
+  try {
+    await conexion.query('BEGIN');
+    const actual = await conexion.query(
+      'SELECT id_usuarios, estado, respuesta FROM solicitud_servicios WHERE id_solicitud_servicios = $1 FOR UPDATE',
+      [req.params.id]
+    );
+    const solicitud = actual.rows[0];
+    if (!solicitud || (esCliente && Number(solicitud.id_usuarios) !== Number(req.usuario.id))) {
+      await conexion.query('ROLLBACK');
+      return res.status(404).json({ error: 'Solicitud no encontrada' });
+    }
+    if (esCliente && solicitud.estado !== 'contestado') {
+      await conexion.query('ROLLBACK');
+      return res.status(409).json({ error: 'Espera la respuesta del equipo antes de enviar otra consulta' });
+    }
+    if (!esCliente && solicitud.estado !== 'pendiente') {
+      await conexion.query('ROLLBACK');
+      return res.status(409).json({ error: 'Esta solicitud ya está contestada' });
+    }
+    if (!esCliente && !solicitud.respuesta) {
+      await conexion.query('ROLLBACK');
+      return res.status(409).json({ error: 'Primero envía la respuesta inicial de la solicitud' });
+    }
+
+    const nuevo = await conexion.query(
+      `INSERT INTO solicitud_mensajes (id_solicitud_servicios, autor, mensaje)
+       VALUES ($1, $2, $3) RETURNING *`,
+      [req.params.id, esCliente ? 'cliente' : 'equipo', mensaje]
+    );
+    await conexion.query(
+      'UPDATE solicitud_servicios SET estado = $1 WHERE id_solicitud_servicios = $2',
+      [esCliente ? 'pendiente' : 'contestado', req.params.id]
+    );
+    await conexion.query('COMMIT');
+    res.status(201).json(nuevo.rows[0]);
+  } catch (error) {
+    try { await conexion.query('ROLLBACK'); } catch (e) { /* ya estaba cerrado */ }
+    console.error(error);
+    res.status(500).json({ error: 'Error al enviar el mensaje' });
+  } finally {
+    conexion.release();
   }
 });
 

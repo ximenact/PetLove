@@ -74,7 +74,7 @@ window.PetLove = (() => {
     ["arnes-perro", "Arnés para perro", "Accesorios", 32900, "arnes perro.jpg", "Arnés ergonómico y resistente que brinda máxima comodidad y control seguro durante los paseos diarios de tu perro."],
     ["arnes-gato", "Arnés para gato", "Accesorios", 29900, "arnes gato.jpg", "Arnés ligero y seguro adaptado a la anatomía felina para pasear al aire libre con total tranquilidad."],
     ["collares", "Collar para mascota", "Accesorios", 19900, "collares.jpg", "Set de collares cómodos y duraderos para la identificación y estilo diario de tu mascota."],
-    ["panolleta", "Pañoleta", "Accesorios", 14900, "panoleta.jpg", "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."],
+    ["panolleta", "Pañoleta", "Accesorios", 14900, "pañoleta.jpg", "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."],
     ["guacal", "Guacal de viaje", "Accesorios", 119900, "guacal.png", "Transportadora segura y bien ventilada, esencial para viajes y visitas al veterinario."],
     ["plato-perro", "Plato para perro", "Alimentos", 22900, "plato perro.8yvb00MYJ9K", "Comedero doble resistente para agua y alimento, perfecto para el uso diario de tu perro."],
     ["plato-gato", "Plato elevado para gato", "Alimentos", 18900, "plato gato.jpg", "Kit de dos recipientes elevados (para agua y comida) que favorece una postura cómoda y ergonómica durante las comidas de tu gato."],
@@ -161,11 +161,30 @@ window.PetLove = (() => {
     document.querySelectorAll("[data-count]").forEach(node => node.textContent = count);
   }
   
-  function addToCart(id, quantity = 1) {
-    if (!isLoggedIn()) { toast("Inicia sesión para agregar productos al carrito."); return false; }
+  // Pasa lo que el visitante dejó en el carrito (sin sesión) al carrito de su cuenta, justo después de iniciar sesión
+  function mergeGuestCart() {
+    const guestKey = `${keys.cart}:guest`;
+    const guest = read(guestKey, []);
+    if (!guest.length) return;
     const user = currentUser();
-    if (user.role === "empleado" || user.role === "administrador") { 
-      toast("Este tipo de cuenta no puede realizar compras."); return false; 
+    if (user && (user.role === "empleado" || user.role === "administrador")) return; // esas cuentas no compran
+    const userKey = cartKey();
+    if (userKey === guestKey) return;
+    const cart = read(userKey, []);
+    guest.forEach(item => {
+      const existing = cart.find(e => e.id === item.id);
+      if (existing) existing.quantity = Math.min(99, Number(existing.quantity || 0) + Number(item.quantity || 0));
+      else cart.push(item);
+    });
+    write(userKey, cart);
+    localStorage.removeItem(guestKey);
+  }
+
+  function addToCart(id, quantity = 1) {
+    // Los visitantes sin sesión también pueden armar su carrito; para comprar sí deben iniciar sesión (ver carrito.js)
+    const user = isLoggedIn() ? currentUser() : null;
+    if (user && (user.role === "empleado" || user.role === "administrador")) {
+      toast("Este tipo de cuenta no puede realizar compras."); return false;
     }
     const product = products.find(item => item.id === id);
     if (!product) return false;
@@ -229,7 +248,7 @@ window.PetLove = (() => {
     keys, read, write, money, escape, products, toast,
     updateCartCount, addToCart, showMessage, isLoggedIn, updateAccountMenu,
     currentUser, cartKey,
-    api, getToken, setSession, clearSession, cargarProductosDesdeBD
+    api, getToken, setSession, clearSession, cargarProductosDesdeBD, mergeGuestCart
   };
 })();
 
