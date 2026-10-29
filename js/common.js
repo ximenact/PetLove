@@ -10,7 +10,7 @@ window.PetLove = (() => {
   // Detecta si estás en Live Server (5500) o en la nube
   const API_BASE = (location.hostname === "127.0.0.1" || location.hostname === "localhost") 
     ? "http://localhost:3000" 
-    : ""; 
+    : "https://petlove-flny.onrender.com"; 
 
   const read = (key, fallback) => {
     try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
