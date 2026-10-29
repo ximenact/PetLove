@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ownId = Number(user.id_usuarios ?? user.id);
 
   const api = PetLove.api;
+  const confirmDialog = PetLove.confirmDialog;
 
   $("[data-admin-name]").textContent = user.name || user.nombre || user.email || user.correo;
 
@@ -417,7 +418,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = collections[name].find(entry => String(entry[idField]) === id);
       if (!item) { notify("No se encontró el registro que quieres eliminar.", true); return; }
       const label = item.nombre || item.titulo;
-      if (!confirm(`¿Seguro que quieres eliminar "${label}"?`)) return;
+      const confirmado = await confirmDialog({
+      title: "¿Eliminar este registro?",
+      message: `¿Seguro que quieres eliminar "${label}"? Esta acción no se puede deshacer.`,
+      confirmText: "Sí, eliminar",
+      danger: true
+    });
+
+if (!confirmado) return;
       button.disabled = true;
       try {
         await api(`${endpoints[name]}/${encodeURIComponent(id)}`, { method: "DELETE" });
@@ -435,8 +443,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const order = collections.orders.find(entry => String(entry.id_pedidos) === orderId);
       if (!order) { notify("No se encontró el pedido que quieres eliminar.", true); return; }
       const aviso = order.estado === "cancelado" ? "" : " Sus productos se devolverán al inventario.";
-      if (!confirm(`¿Eliminar el pedido ${orderId} de forma definitiva?${aviso} Esta acción no se puede deshacer.`)) return;
-      button.disabled = true;
+      const confirmado = await confirmDialog({
+        title: `¿Eliminar el pedido #${orderId}?`,
+        message: `Se eliminará de forma definitiva.${aviso} Esta acción no se puede deshacer.`,
+        confirmText: "Eliminar pedido",
+        danger: true
+      });
+
+if (!confirmado) return;      button.disabled = true;
       try {
         await api(`/api/pedidos/${encodeURIComponent(orderId)}`, { method: "DELETE" });
         await refreshAfterChange(`El pedido ${orderId} se eliminó correctamente.`);
@@ -453,8 +467,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const account = collections.users.find(entry => String(entry.id_usuarios) === deleteUserId);
       if (!account) { notify("No se encontró el usuario que quieres eliminar.", true); return; }
       if (Number(deleteUserId) === ownId) { notify("No puedes borrar tu propia cuenta.", true); return; }
-      if (!confirm(`¿Eliminar la cuenta de ${account.nombre} (${account.correo}) de forma definitiva? Esta acción no se puede deshacer.`)) return;
-      button.disabled = true;
+      const confirmado = await confirmDialog({
+        title: "¿Eliminar esta cuenta?",
+        message: `Se eliminará la cuenta de ${account.nombre} (${account.correo}). Esta acción no se puede deshacer.`,
+        confirmText: "Eliminar cuenta",
+        danger: true
+      });
+
+if (!confirmado) return;      button.disabled = true;
       try {
         await api(`/api/usuarios/${encodeURIComponent(deleteUserId)}`, { method: "DELETE" });
         await refreshAfterChange(`La cuenta de ${account.nombre} se eliminó correctamente.`);
@@ -501,9 +521,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const order = collections.orders.find(entry => String(entry.id_pedidos) === id);
       if (!order) { notify("No se encontró el pedido.", true); renderOrders(); return; }
       if (order.estado === "cancelado") { notify("Un pedido cancelado no se puede reactivar.", true); renderOrders(); return; }
-      if (select.value === "cancelado" && !confirm(`¿Cancelar el pedido ${id}? Se devolverán sus productos al inventario.`)) {
-        renderOrders();
-        return;
+      if (select.value === "cancelado") {
+        const confirmado = await confirmDialog({
+          title: `¿Cancelar el pedido #${id}?`,
+          message: "Se devolverán sus productos al inventario.",
+          confirmText: "Sí, cancelar pedido",
+          danger: true
+        });
+
+        if (!confirmado) {
+          renderOrders();
+          return;
+        }
       }
       select.disabled = true;
       try {

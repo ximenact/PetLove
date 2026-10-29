@@ -1124,3 +1124,575 @@
 .employee-main-header::after {
     display: none !important;
 }
+
+
+/* =========================================================
+   PET LOVE · PANEL DEL CLIENTE
+   Comparte el diseño base del panel de empleado.
+   ========================================================= */
+
+.client-page {
+  min-height: 100vh;
+  background: var(--emp-background, #f7f7fc);
+  color: var(--emp-text, #25263a);
+}
+
+.client-page [hidden] {
+  display: none !important;
+}
+
+/* =========================================================
+   1. ICONO Y MARCA
+   ========================================================= */
+
+.client-page .employee-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  color: #b8b2ff;
+}
+
+.client-page .employee-brand-icon.material-symbols-outlined {
+  font-size: 35px;
+}
+
+.client-page .employee-brand-text strong {
+  color: #b8b2ff;
+}
+
+/* =========================================================
+   2. CABECERA Y CONTENIDO
+   ========================================================= */
+
+.client-page .employee-content {
+  width: 100%;
+}
+
+.client-page .employee-header {
+  margin-bottom: 26px;
+}
+
+.client-page .employee-header h1 {
+  margin-bottom: 8px;
+}
+
+.client-page .employee-header p {
+  line-height: 1.7;
+}
+
+.client-view {
+  width: 100%;
+  animation: clientFadeIn 0.22s ease;
+}
+
+@keyframes clientFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   3. DISTRIBUCIÓN DEL PERFIL
+   ========================================================= */
+
+.client-profile-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.client-profile-card,
+.client-panel-card {
+  min-width: 0;
+  padding: 26px;
+  border: 1px solid var(--emp-border, #e9e8f2);
+  border-radius: var(--emp-radius, 16px);
+  background: var(--emp-white, #fff);
+  box-shadow: var(--emp-shadow, 0 7px 24px #28234a08);
+}
+
+.client-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.client-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  margin-bottom: 18px;
+  border: 5px solid #f0efff;
+  border-radius: 50%;
+  background: #e8e5ff;
+  color: #655be7;
+}
+
+.client-avatar .material-symbols-outlined {
+  font-size: 46px;
+}
+
+.client-profile-card h2 {
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.client-profile-card .muted {
+  max-width: 100%;
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+  color: var(--emp-muted, #777d91);
+  font-size: 0.9rem;
+}
+
+.client-profile-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border: 1px solid #e5e1ff;
+  border-radius: 30px;
+  background: #f5f3ff;
+  color: #655be7;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.client-profile-chip .material-symbols-outlined {
+  font-size: 17px;
+}
+
+/* =========================================================
+   4. TARJETAS Y TÍTULOS DE SECCIÓN
+   ========================================================= */
+
+.client-panel-card {
+  margin-bottom: 22px;
+}
+
+.client-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.client-heading-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #eeecff;
+  color: #655be7;
+}
+
+.client-heading-icon .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.client-section-heading > div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.client-section-heading h2 {
+  margin: 0 0 5px;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.client-section-heading p {
+  margin: 0;
+  color: var(--emp-muted, #777d91);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   5. FORMULARIO DEL PERFIL
+   ========================================================= */
+
+.client-page .profile-form {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.client-page .profile-form .group {
+  margin-bottom: 19px;
+}
+
+.client-page .profile-form .group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--emp-text, #25263a);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.client-page .profile-form .group input {
+  width: 100%;
+  min-height: 45px;
+  padding: 12px 14px;
+  border: 1px solid var(--emp-border, #e9e8f2);
+  border-radius: 10px;
+  outline: none;
+  background: #fff;
+  color: var(--emp-text, #25263a);
+  font: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.client-page .profile-form .group input:focus {
+  border-color: #7770f4;
+  box-shadow: 0 0 0 3px #7770f41c;
+}
+
+.client-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.client-form-actions .btn,
+.client-service-action .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.client-form-actions .btn .material-symbols-outlined,
+.client-service-action .btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.client-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =========================================================
+   6. BOTÓN DE ACTUALIZAR
+   ========================================================= */
+
+.client-refresh-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--emp-border, #e9e8f2);
+  border-radius: 12px;
+  background: #fff;
+  color: #655be7;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.client-refresh-btn:hover {
+  transform: rotate(8deg);
+  background: #f2f0ff;
+}
+
+.client-refresh-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+/* =========================================================
+   7. TABLA DE PEDIDOS
+   ========================================================= */
+
+.client-orders {
+  width: 100%;
+  min-width: 570px;
+}
+
+.client-page .employee-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--emp-border, #e9e8f2);
+  border-radius: 12px;
+}
+
+.client-page .employee-table th {
+  white-space: nowrap;
+}
+
+.client-page .employee-table td {
+  vertical-align: middle;
+}
+
+.client-page .employee-table td[colspan] {
+  padding: 28px 18px;
+  text-align: center;
+  color: var(--emp-muted, #777d91);
+  line-height: 1.7;
+}
+
+/* =========================================================
+   8. SOLICITUDES DE SERVICIOS
+   ========================================================= */
+
+.client-services-list {
+  display: grid;
+  gap: 18px;
+}
+
+.client-service-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--emp-border, #e9e8f2);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.client-service-card:hover {
+  border-color: #d8d3ff;
+  box-shadow: 0 5px 18px #28234a08;
+}
+
+.client-service-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.client-service-id {
+  color: var(--emp-muted, #777d91);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.client-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 30px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.client-status.is-pending {
+  background: #fff3d9;
+  color: #946200;
+}
+
+.client-status.is-answered {
+  background: #e2f8ec;
+  color: #197447;
+}
+
+.client-service-card h3 {
+  margin: 0 0 12px;
+  color: var(--emp-text, #25263a);
+  font-size: 1.08rem;
+  overflow-wrap: anywhere;
+}
+
+.client-service-description {
+  margin: 0 0 15px;
+  color: #555b70;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.client-service-date {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0 0 18px;
+  color: var(--emp-muted, #777d91);
+  font-size: 0.83rem;
+}
+
+.client-service-date .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.client-service-reply {
+  padding: 16px;
+  border-left: 4px solid #7770f4;
+  border-radius: 0 10px 10px 0;
+  background: #f7f6ff;
+}
+
+.client-service-reply strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: #5148c7;
+  font-size: 0.88rem;
+}
+
+.client-service-reply strong .material-symbols-outlined {
+  font-size: 19px;
+}
+
+.client-service-reply p {
+  margin: 0;
+  color: #45445b;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.client-service-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* =========================================================
+   9. ESTADOS VACÍOS Y ERRORES
+   ========================================================= */
+
+.client-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 42px 20px;
+  border: 1px dashed #dcd9ee;
+  border-radius: 14px;
+  background: #fbfaff;
+  text-align: center;
+}
+
+.client-empty-state > .material-symbols-outlined {
+  margin-bottom: 12px;
+  color: #7770f4;
+  font-size: 42px;
+}
+
+.client-empty-state h3 {
+  margin: 0 0 8px;
+  color: var(--emp-text, #25263a);
+  font-size: 1.05rem;
+}
+
+.client-empty-state p {
+  max-width: 440px;
+  margin: 0;
+  color: var(--emp-muted, #777d91);
+  line-height: 1.7;
+}
+
+/* =========================================================
+   10. RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .client-profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .client-profile-card {
+    padding: 22px;
+  }
+
+  .client-avatar {
+    width: 78px;
+    height: 78px;
+  }
+
+  .client-avatar .material-symbols-outlined {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 700px) {
+  .client-page .employee-content {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .client-profile-card,
+  .client-panel-card {
+    padding: 19px;
+  }
+
+  .client-section-heading {
+    gap: 10px;
+  }
+
+  .client-heading-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .client-section-heading h2 {
+    font-size: 1.05rem;
+  }
+
+  .client-section-heading p {
+    font-size: 0.82rem;
+  }
+
+  .client-service-card {
+    padding: 17px;
+  }
+
+  .client-service-top {
+    align-items: flex-start;
+  }
+
+  .client-form-actions,
+  .client-service-action {
+    flex-direction: column;
+  }
+
+  .client-form-actions .btn,
+  .client-service-action .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-view {
+    animation: none;
+  }
+
+  .client-page *,
+  .client-page *::before,
+  .client-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

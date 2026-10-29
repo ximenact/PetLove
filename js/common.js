@@ -74,7 +74,7 @@ window.PetLove = (() => {
     ["arnes-perro", "Arnés para perro", "Accesorios", 32900, "arnes perro.jpg", "Arnés ergonómico y resistente que brinda máxima comodidad y control seguro durante los paseos diarios de tu perro."],
     ["arnes-gato", "Arnés para gato", "Accesorios", 29900, "arnes gato.jpg", "Arnés ligero y seguro adaptado a la anatomía felina para pasear al aire libre con total tranquilidad."],
     ["collares", "Collar para mascota", "Accesorios", 19900, "collares.jpg", "Set de collares cómodos y duraderos para la identificación y estilo diario de tu mascota."],
-    ["panolleta", "Pañoleta", "Accesorios", 14900, "pañoleta.jpg", "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."],
+    ["panolleta", "Pañoleta", "Accesorios", 14900, "panoleta.jpg", "Accesorio textil moderno y encantador para darle un toque diferente y lindo a tu perro o gato."],
     ["guacal", "Guacal de viaje", "Accesorios", 119900, "guacal.png", "Transportadora segura y bien ventilada, esencial para viajes y visitas al veterinario."],
     ["plato-perro", "Plato para perro", "Alimentos", 22900, "plato perro.8yvb00MYJ9K", "Comedero doble resistente para agua y alimento, perfecto para el uso diario de tu perro."],
     ["plato-gato", "Plato elevado para gato", "Alimentos", 18900, "plato gato.jpg", "Kit de dos recipientes elevados (para agua y comida) que favorece una postura cómoda y ergonómica durante las comidas de tu gato."],
@@ -199,6 +199,119 @@ window.PetLove = (() => {
     node.classList.toggle("formmsg-success", !error);
     node.setAttribute("role", error ? "alert" : "status");
   }
+  
+  // =====================================================
+  // VENTANA EMERGENTE DE CONFIRMACIÓN
+  // =====================================================
+
+  function confirmDialog({
+    title = "¿Estás seguro?",
+    message = "Esta acción no se puede deshacer.",
+    confirmText = "Sí, eliminar",
+    cancelText = "Cancelar",
+    danger = true
+  } = {}) {
+    return new Promise(resolve => {
+      // Evitar que se abran dos ventanas a la vez.
+      const anterior = document.querySelector("#petlove-confirm-overlay");
+
+      if (anterior) anterior.remove();
+
+      const overlay = document.createElement("div");
+      overlay.id = "petlove-confirm-overlay";
+      overlay.className = "petlove-confirm-overlay";
+
+      overlay.innerHTML = `
+        <section
+          class="petlove-confirm-modal"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="petlove-confirm-title"
+          aria-describedby="petlove-confirm-message"
+          tabindex="-1">
+
+          <div class="petlove-confirm-icon ${danger ? "is-danger" : ""}">
+            <span class="material-symbols-outlined">
+              ${danger ? "delete" : "help"}
+            </span>
+          </div>
+
+          <h2 id="petlove-confirm-title"></h2>
+
+          <p id="petlove-confirm-message"></p>
+
+          <div class="petlove-confirm-actions">
+            <button
+              type="button"
+              class="petlove-confirm-cancel">
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              class="petlove-confirm-accept ${danger ? "is-danger" : ""}">
+              Sí, eliminar
+            </button>
+          </div>
+        </section>
+      `;
+
+      // Insertar el texto de forma segura.
+      overlay.querySelector("#petlove-confirm-title").textContent = title;
+      overlay.querySelector("#petlove-confirm-message").textContent = message;
+      overlay.querySelector(".petlove-confirm-cancel").textContent = cancelText;
+      overlay.querySelector(".petlove-confirm-accept").textContent = confirmText;
+
+      document.body.appendChild(overlay);
+
+      const modal = overlay.querySelector(".petlove-confirm-modal");
+      const cancelButton = overlay.querySelector(".petlove-confirm-cancel");
+      const acceptButton = overlay.querySelector(".petlove-confirm-accept");
+
+      let finalizado = false;
+
+      function cerrar(resultado) {
+        if (finalizado) return;
+
+        finalizado = true;
+        document.removeEventListener("keydown", manejarTecla);
+        overlay.remove();
+        resolve(resultado);
+      }
+
+      function manejarTecla(event) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          cerrar(false);
+          return;
+        }
+
+        // Mantener el foco dentro de la ventana.
+        if (event.key === "Tab") {
+          event.preventDefault();
+
+          const destino = document.activeElement === cancelButton
+            ? acceptButton
+            : cancelButton;
+
+          destino.focus();
+        }
+      }
+
+      cancelButton.addEventListener("click", () => cerrar(false));
+      acceptButton.addEventListener("click", () => cerrar(true));
+
+      overlay.addEventListener("click", event => {
+        if (event.target === overlay) cerrar(false);
+      });
+
+      document.addEventListener("keydown", manejarTecla);
+
+      // El foco comienza en Cancelar para evitar eliminaciones accidentales.
+      cancelButton.focus();
+    });
+  }
+
 
   function updateAccountMenu() {
     const loggedIn = isLoggedIn();
@@ -268,8 +381,10 @@ window.PetLove = (() => {
     });
   }
 
+
   return {
     keys, read, write, money, escape, products, toast,
+    confirmDialog,
     updateCartCount, addToCart, showMessage, isLoggedIn, updateAccountMenu,
     currentUser, cartKey,
     api, getToken, setSession, clearSession, cargarProductosDesdeBD, mergeGuestCart

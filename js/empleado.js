@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const ordersBody = document.querySelector("[data-employee-orders]");
   if (!ordersBody) return;
 
-  const { escape, money, currentUser, showMessage, toast } = PetLove;
+  const { escape, money, currentUser, showMessage, toast, confirmDialog } = PetLove;
   const user = currentUser();
   
   // Si no hay usuario o no es empleado, lo sacamos al login
@@ -93,8 +93,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pedido = pedidos.find(p => String(p.id_pedidos) === id);
     if (!pedido) { toast("No se encontró el pedido."); drawOrders(); return; }
     if (FINALES.includes(pedido.estado)) { toast("Un pedido entregado o cancelado ya no se puede modificar."); drawOrders(); return; }
-    if (select.value === "cancelado" && !confirm(`¿Cancelar el pedido #${id}? Se devolverán sus productos al inventario.`)) {
-      drawOrders(); return;
+    if (select.value === "cancelado") {
+      const confirmado = await confirmDialog({
+        title: `¿Cancelar el pedido #${id}?`,
+        message: "Se devolverán sus productos al inventario.",
+        confirmText: "Sí, cancelar pedido",
+        danger: true
+      });
+
+      if (!confirmado) {
+        drawOrders();
+        return;
+      }
     }
     select.disabled = true;
     try {

@@ -4195,3 +4195,168 @@ footer {
   display: flex;
   align-items: center;
 }
+
+
+/* =========================================================
+   PET LOVE · VENTANA EMERGENTE DE CONFIRMACIÓN
+   ========================================================= */
+
+.petlove-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(26, 23, 48, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: petloveOverlayIn 0.18s ease-out;
+}
+
+.petlove-confirm-modal {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border: 1px solid #eeebf6;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(28, 23, 57, 0.24);
+  text-align: center;
+  animation: petloveModalIn 0.22s ease-out;
+}
+
+.petlove-confirm-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #efedff;
+  color: #6c63ff;
+}
+
+.petlove-confirm-icon.is-danger {
+  background: #fff0f2;
+  color: #c83e58;
+}
+
+.petlove-confirm-icon .material-symbols-outlined {
+  font-size: 34px;
+}
+
+.petlove-confirm-modal h2 {
+  margin: 0 0 12px;
+  color: #25233b;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.petlove-confirm-modal p {
+  margin: 0;
+  color: #777487;
+  font-size: 0.96rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.petlove-confirm-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.petlove-confirm-actions button {
+  min-height: 44px;
+  padding: 11px 19px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.petlove-confirm-cancel {
+  border-color: #e8e5f1 !important;
+  background: #f5f4fa;
+  color: #49465b;
+}
+
+.petlove-confirm-cancel:hover {
+  background: #eae8f3;
+}
+
+.petlove-confirm-accept {
+  background: #6c63ff;
+  color: #fff;
+}
+
+.petlove-confirm-accept:hover {
+  background: #5950df;
+  box-shadow: 0 5px 15px #6c63ff35;
+  transform: translateY(-1px);
+}
+
+.petlove-confirm-accept.is-danger {
+  background: #c83e58;
+}
+
+.petlove-confirm-accept.is-danger:hover {
+  background: #ad3049;
+  box-shadow: 0 5px 15px #c83e5830;
+}
+
+.petlove-confirm-actions button:focus-visible {
+  outline: 3px solid #a9a3ff;
+  outline-offset: 3px;
+}
+
+@keyframes petloveOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes petloveModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .petlove-confirm-modal {
+    padding: 24px 19px;
+    border-radius: 18px;
+  }
+
+  .petlove-confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .petlove-confirm-actions button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .petlove-confirm-overlay,
+  .petlove-confirm-modal {
+    animation: none;
+  }
+}

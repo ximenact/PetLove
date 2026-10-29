@@ -1,140 +1,343 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Edita tu perfil PET LOVE">
-  <title>Mi perfil | PET LOVE</title>
+  <meta name="description" content="Panel del cliente de PET LOVE">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+
+  <title>Panel del cliente | PET LOVE</title>
+
   <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/empleado.css">
+
   <script src="js/common.js" defer></script>
   <script src="js/perfil.js" defer></script>
 </head>
-<body>
 
-  <header>
-    <div class="container nav">
-      <div class="logo-titulo">
-        <img src="/img/logo.png" height="60" alt="">
-        <a class="brand" href="inicio.html"> PET<span>LOVE</span></a>
-      </div>
+<body class="employee-page client-page">
 
-      <nav class="links">
-        <a href="inicio.html">Inicio</a>
-        <a href="catalogo.html">Catálogo</a>
-        <a href="servicios.html">Servicios</a>
-        <a href="contacto.html">Contacto</a>
-        <a href="perfil.html">Mi perfil</a>
-      </nav>
-      <a class="cart-link" href="carrito.html">🛒 Carrito <span data-count>0</span></a>
+  <!-- ========== MENÚ LATERAL ========== -->
+  <aside class="employee-sidebar" aria-label="Menú del cliente">
+
+    <a class="employee-brand" href="inicio.html" title="Volver a PET LOVE">
+      <span class="employee-brand-icon material-symbols-outlined">
+        pets
+      </span>
+
+      <span class="employee-brand-text">
+        PET<strong>LOVE</strong>
+        <small>Panel del cliente</small>
+      </span>
+    </a>
+
+    <div class="employee-sidebar-label">MI CUENTA</div>
+
+    <nav class="employee-menu" aria-label="Secciones del cliente">
+
+      <button
+        class="employee-nav-link active"
+        type="button"
+        data-client-tab="perfil"
+        aria-current="page"
+        title="Mi perfil">
+
+        <span class="material-symbols-outlined">person</span>
+        <span class="employee-link-text">Mi perfil</span>
+      </button>
+
+      <button
+        class="employee-nav-link"
+        type="button"
+        data-client-tab="pedidos"
+        title="Mis pedidos">
+
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="employee-link-text">Mis pedidos</span>
+      </button>
+
+      <button
+        class="employee-nav-link"
+        type="button"
+        data-client-tab="servicios"
+        title="Servicios solicitados">
+
+        <span class="material-symbols-outlined">support_agent</span>
+        <span class="employee-link-text">Servicios solicitados</span>
+      </button>
+
+      <a href="carrito.html"
+         class="employee-nav-link"
+         title="Mi carrito">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="employee-link-text">Mi carrito</span>
+      </a>
+
+    </nav>
+
+    <div class="employee-sidebar-bottom">
+
+      <a href="inicio.html"
+         class="employee-bottom-link"
+         title="Volver a la tienda">
+
+        <span class="material-symbols-outlined">storefront</span>
+        <span class="employee-link-text">Volver a la tienda</span>
+      </a>
+
+      <button
+        class="employee-bottom-link employee-logout"
+        type="button"
+        id="logout-btn"
+        title="Cerrar sesión">
+
+        <span class="material-symbols-outlined">logout</span>
+        <span class="employee-link-text">Cerrar sesión</span>
+      </button>
+
     </div>
-  </header>
 
-  <main>
-    <section class="section container profile-wrap">
-      
-      <div class="profile-banner">
-        <span class="profile-paw">🐾</span>
-        <p class="eyebrow">TU ESPACIO PET LOVE</p>
-        <h1 id="profile-greeting">¡Hola, amante de las mascotas!</h1>
-        <p>Tu perfil, tus datos y tus compras en un solo lugar.</p>
-        <div class="profile-shortcuts">
-          <a href="mis-pedidos.html">Mis pedidos</a>
-          <a href="carrito.html">Mi carrito</a>
-          <a href="/servicio_solicitado.html">Servicios Solicitados</a>
+  </aside>
+
+
+  <!-- ========== CONTENIDO PRINCIPAL ========== -->
+  <main class="employee-main">
+    <div class="employee-content">
+
+      <header class="employee-header">
+        <div class="head">
+          <span class="eyebrow">TU ESPACIO PET LOVE</span>
+
+          <h1 id="client-page-title">Mi perfil</h1>
+
+          <p class="muted">
+            Bienvenido,
+            <strong><span id="profile-greeting">amante de las mascotas</span></strong>.
+            Administra tu cuenta y consulta tu actividad.
+          </p>
         </div>
-      </div>
+      </header>
 
-      <div class="profile-content">
-        <aside class="profile-side">
-          <div class="avatar" id="profile-avatar">🐶</div>
-          <h2 id="profile-name-card">Mi perfil</h2>
-          <p id="profile-email-card" class="muted">Inicia sesión para ver tus datos</p>
-          <span class="profile-chip">💜 Familia PET LOVE</span>
-        </aside>
 
-        <form class="form profile-form" id="profile-form" data-profile-form>
-          <div class="profile-form-title">
-            <span class="icon-bubble">✏️</span>
+      <!-- ========== SECCIÓN: PERFIL ========== -->
+      <section id="vista-perfil" class="client-view">
+
+        <div class="client-profile-layout">
+
+          <!-- Tarjeta lateral del usuario -->
+          <aside class="client-profile-card">
+
+            <div class="client-avatar">
+              <span class="material-symbols-outlined">pets</span>
+            </div>
+
+            <h2 id="profile-name-card">Mi perfil</h2>
+
+            <p id="profile-email-card" class="muted">
+              Cargando tus datos...
+            </p>
+
+            <span class="client-profile-chip">
+              <span class="material-symbols-outlined">favorite</span>
+              Familia PET LOVE
+            </span>
+
+          </aside>
+
+
+          <!-- Formulario del perfil -->
+          <section class="client-panel-card">
+
+            <div class="client-section-heading">
+              <div class="client-heading-icon">
+                <span class="material-symbols-outlined">manage_accounts</span>
+              </div>
+
+              <div>
+                <h2>Editar mi perfil</h2>
+                <p>Actualiza la información de tu cuenta.</p>
+              </div>
+            </div>
+
+            <form class="form profile-form"
+                  id="profile-form"
+                  data-profile-form>
+
+              <div class="group">
+                <label for="profile-name">Nombre completo</label>
+                <input
+                  id="profile-name"
+                  name="nombre"
+                  type="text"
+                  required
+                  minlength="2"
+                  maxlength="100"
+                  autocomplete="name"
+                  placeholder="Escribe tu nombre">
+              </div>
+
+              <div class="group">
+                <label for="profile-email">Correo electrónico</label>
+                <input
+                  id="profile-email"
+                  name="correo"
+                  type="email"
+                  required
+                  maxlength="150"
+                  autocomplete="email"
+                  placeholder="tu@email.com">
+              </div>
+
+              <div class="group">
+                <label for="profile-tel">Número telefónico</label>
+                <input
+                  id="profile-tel"
+                  name="telefono"
+                  type="tel"
+                  autocomplete="tel"
+                  placeholder="Tu número de contacto">
+              </div>
+
+              <div class="group">
+                <label for="profile-dire">Dirección</label>
+                <input
+                  id="profile-dire"
+                  name="direccion"
+                  type="text"
+                  autocomplete="street-address"
+                  placeholder="Tu dirección">
+              </div>
+
+              <div class="group">
+                <label for="profile-pet">Nombre de tu mascota</label>
+                <input
+                  id="profile-pet"
+                  name="mascota"
+                  type="text"
+                  placeholder="Nombre de tu compañero">
+              </div>
+
+              <div class="formmsg hidden"
+                   data-profile-msg
+                   role="status"
+                   aria-live="polite"></div>
+
+              <div class="client-form-actions">
+                <button class="btn" type="submit">
+                  <span class="material-symbols-outlined">save</span>
+                  Guardar cambios
+                </button>
+              </div>
+
+            </form>
+
+          </section>
+        </div>
+
+      </section>
+
+
+      <!-- ========== SECCIÓN: MIS PEDIDOS ========== -->
+      <section id="vista-pedidos" class="client-view" hidden>
+
+        <section class="client-panel-card">
+
+          <div class="client-section-heading">
+            <div class="client-heading-icon">
+              <span class="material-symbols-outlined">receipt_long</span>
+            </div>
+
             <div>
-              <h2>Editar mi perfil</h2>
-              <p>Actualiza la información de tu cuenta.</p>
+              <h2>Mis pedidos</h2>
+              <p>Consulta tus compras y el estado de cada pedido.</p>
+            </div>
+
+            <button
+              type="button"
+              class="client-refresh-btn"
+              id="refresh-orders"
+              title="Actualizar pedidos">
+
+              <span class="material-symbols-outlined">refresh</span>
+            </button>
+          </div>
+
+          <div class="employee-table-wrap">
+            <table class="employee-table orders client-orders">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Fecha</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+
+              <tbody id="client-orders-body">
+                <tr>
+                  <td colspan="4">Cargando tus pedidos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+      </section>
+
+
+      <!-- ========== SECCIÓN: SERVICIOS SOLICITADOS ========== -->
+      <section id="vista-servicios" class="client-view" hidden>
+
+        <section class="client-panel-card">
+
+          <div class="client-section-heading">
+            <div class="client-heading-icon">
+              <span class="material-symbols-outlined">support_agent</span>
+            </div>
+
+            <div>
+              <h2>Servicios solicitados</h2>
+              <p>Consulta tus solicitudes y las respuestas del equipo.</p>
+            </div>
+
+            <button
+              type="button"
+              class="client-refresh-btn"
+              id="refresh-services"
+              title="Actualizar solicitudes">
+
+              <span class="material-symbols-outlined">refresh</span>
+            </button>
+          </div>
+
+          <div id="client-services-list" class="client-services-list">
+            <div class="client-empty-state">
+              <span class="material-symbols-outlined">hourglass_top</span>
+              <p>Cargando tus solicitudes...</p>
             </div>
           </div>
 
-          <div class="group">
-            <label for="profile-name">Nombre completo</label>
-            <input id="profile-name" required minlength="2" placeholder="¿cómo te llamas?">
+          <div class="client-service-action">
+            <a href="servicios.html" class="btn">
+              <span class="material-symbols-outlined">add_circle</span>
+              Conocer servicios
+            </a>
+
+            <a href="solicitar_servicio.html" class="btn outline">
+              Solicitar un servicio
+            </a>
           </div>
 
-          <div class="group">
-            <label for="profile-email">Correo electrónico</label>
-            <input id="profile-email" type="email" required placeholder="tu@email.com">
-          </div>
+        </section>
 
-          <div class="group">
-            <label for="profile-tel">Número Telefonico</label>
-            <input id="profile-tel" type="tel" required placeholder="número de celular o fijo">
-          </div>
+      </section>
 
-          <div class="group">
-            <label for="profile-dire">Dirección</label>
-            <input id="profile-dire" type="dire" required placeholder="dirección de tu casa">
-          </div>
-
-          <div class="group">
-            <label for="profile-pet">Nombre de tu mascota (opcional)</label>
-            <input id="profile-pet" placeholder="¿Cómo se llama tu compañero?">
-          </div>
-
-          <div class="formmsg hidden" data-profile-msg></div>
-
-          <div class="profile-actions">
-            <button class="btn" type="submit">Guardar cambios ✓</button>
-            <button class="btn outline" type="button" id="logout-btn">Cerrar sesión ↗</button>
-          </div>
-        </form>
-      </div>
-
-    </section>
+    </div>
   </main>
-
-  <footer class="petlove-footer">
-    <div class="container foot">
-      <div class="footer-brand">
-        <div class="logo-titulo">
-          <img src="/img/logo.png" height="60" alt="">
-          <a class="footer-logo" href="inicio.html"> PET<span>LOVE</span></a>
-        </div>
-        <p>Pequeños detalles, grandes momentos y mucho amor para quienes hacen nuestra vida más feliz.</p>
-        <div class="social-links" aria-label="Redes sociales"><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram ↗</a><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook ↗</a><a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok ↗</a></div>
-
-      </div>
-
-      <div class="footer-column">
-        <h3>Explora</h3>
-        <nav class="foot-links" aria-label="Enlaces de navegación">
-          <a href="inicio.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
-          <a href="servicios.html">Servicios</a>
-        </nav>
-      </div>
-
-      <div class="footer-column">
-        <h3>Tu cuenta</h3>
-        <nav class="foot-links" aria-label="Enlaces de tu cuenta">
-          <a href="mis-pedidos.html">Mis pedidos</a>
-          <a href="perfil.html">Mi perfil</a>
-          <a href="contacto.html">Contacto</a>
-        </nav>
-      </div>
-
-    </div>
-
-
-    <div class="footer-bottom">
-      <p>© 2026 PET LOVE. Todos los derechos reservados.</p>
-    </div>
-  </footer>
 
 </body>
 </html>
